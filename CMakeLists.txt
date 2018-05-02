@@ -1,9 +1,13 @@
-cmake_minimum_required (VERSION 3.1.0)
+cmake_minimum_required (VERSION 3.5)
 
 set(PROJECT_NAME COLLADA2GLTF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set( CMAKE_CXX_FLAGS "-fpic ${CMAKE_CXX_FLAGS}" )
+set( CMAKE_C_FLAGS   "-fpic ${CMAKE_C_FLAGS}" )
+#Переключаем библиотеку draco в нужный режим
+set(BUILD_FOR_GLTF ON)
+#По какой то причине опции компилятора в draco BUILD_FOR_GLTF срабатыват через раз, дублируем их здесь.
+ADD_DEFINITIONS("-DDRACO_MESH_COMPRESSION_SUPPORTED -DDRACO_STANDARD_EDGEBREAKER_SUPPORTED")
+
 include(ExternalProject)
 
 project(${PROJECT_NAME})
@@ -18,7 +22,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 # cmake -Dtest=ON to build with tests
-option(test "Build all tests." OFF)
+option(test "Build all tests." ON)
 
 # GLTF
 include_directories(GLTF/include)
@@ -111,7 +115,7 @@ endif()
 include_directories(include)
 file(GLOB LIB_HEADERS "include/*.h")
 set(LIB_SOURCES src/COLLADA2GLTFWriter.cpp src/COLLADA2GLTFExtrasHandler.cpp)
-add_library(${PROJECT_NAME} ${LIB_HEADERS} ${LIB_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES})
 if(MSVC)
    target_link_libraries(${PROJECT_NAME} GLTF ${OpenCOLLADA})
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
