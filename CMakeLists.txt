@@ -114,7 +114,11 @@ endif()
 # COLLADA2GLTF
 include_directories(include)
 file(GLOB LIB_HEADERS "include/*.h")
-set(LIB_SOURCES src/COLLADA2GLTFWriter.cpp src/COLLADA2GLTFExtrasHandler.cpp)
+set(LIB_SOURCES
+        src/COLLADA2GLTFWriter.cpp
+        src/COLLADA2GLTFExtrasHandler.cpp
+        src/Utils.cpp
+  )
 add_library(${PROJECT_NAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES})
 if(MSVC)
    target_link_libraries(${PROJECT_NAME} GLTF ${OpenCOLLADA})
@@ -126,7 +130,7 @@ endif()
 include_directories(dependencies/ahoy/include)
 add_subdirectory(dependencies/ahoy)
 
-add_executable(${PROJECT_NAME}-bin src/main.cpp)
+add_executable(${PROJECT_NAME}-bin src/main.cpp src/Utils)
 if(MSVC)
    target_link_libraries(${PROJECT_NAME}-bin ${PROJECT_NAME} ahoy)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
