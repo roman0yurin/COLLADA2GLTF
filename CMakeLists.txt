@@ -25,7 +25,7 @@ endif()
 option(test "Build all tests." ON)
 
 # GLTF
-include_directories(GLTF/include)
+set(GLTF_INCLUDES GLTF/include)
 add_subdirectory(GLTF)
 
 # Disable for other modules
@@ -33,10 +33,10 @@ set(TEST_ENABLED ${test})
 set(test OFF)
 
 # RapidJSON
-include_directories(GLTF/dependencies/rapidjson/include)
+set(GLTF_INCLUDES GLTF/dependencies/rapidjson/include ${GLTF_INCLUDES})
 
 # Draco
-include_directories(GLTF/dependencies/draco/src)
+set(GLTF_INCLUDES GLTF/dependencies/draco/src ${GLTF_INCLUDES})
 
 # Pre-compiled
 if(precompiled MATCHES "X86")
@@ -102,17 +102,21 @@ if(PRECOMPILED_DIR)
 endif()
 
 # COLLADASaxFrameworkLoader/BaseUtils/Framework, GeneratedSaxParser
-include_directories(dependencies/OpenCOLLADA/OpenCOLLADA/COLLADASaxFrameworkLoader/include)
-include_directories(dependencies/OpenCOLLADA/OpenCOLLADA/COLLADABaseUtils/include)
-include_directories(dependencies/OpenCOLLADA/OpenCOLLADA/COLLADAFramework/include)
-include_directories(dependencies/OpenCOLLADA/OpenCOLLADA/GeneratedSaxParser/include)
+set(GLTF_INCLUDES
+        dependencies/OpenCOLLADA/OpenCOLLADA/COLLADASaxFrameworkLoader/include
+        dependencies/OpenCOLLADA/OpenCOLLADA/COLLADABaseUtils/include
+				dependencies/OpenCOLLADA/OpenCOLLADA/COLLADAFramework/include
+        dependencies/OpenCOLLADA/OpenCOLLADA/GeneratedSaxParser/include
+        ${GLTF_INCLUDES}
+)
 if(NOT OpenCOLLADA)
   add_subdirectory(dependencies/OpenCOLLADA/modules/COLLADASaxFrameworkLoader)
   set(OpenCOLLADA COLLADASaxFrameworkLoader)
 endif()
 
 # COLLADA2GLTF
-include_directories(include)
+set(GLTF_INCLUDES include ${GLTF_INCLUDES})
+
 file(GLOB LIB_HEADERS "include/*.h")
 set(LIB_SOURCES
         src/COLLADA2GLTFWriter.cpp
@@ -127,7 +131,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 # ahoy
-include_directories(dependencies/ahoy/include)
+set(GLTF_INCLUDES dependencies/ahoy/include ${GLTF_INCLUDES})
 add_subdirectory(dependencies/ahoy)
 
 add_executable(${PROJECT_NAME}-bin src/main.cpp src/Utils)
@@ -144,11 +148,11 @@ if(TEST_ENABLED)
 
   # gtest
   set(GTEST_LINKED 1)
-  include_directories(GLTF/dependencies/googletest/googletest/include)
+  set(GLTF_INCLUDES GLTF/dependencies/googletest/googletest/include ${GLTF_INCLUDES})
   add_subdirectory(GLTF/dependencies/googletest/googletest)
 
   # Unit Tests
-  include_directories(test/include)
+  set(GLTF_INCLUDES test/include ${GLTF_INCLUDES})
   file(GLOB TEST_HEADERS "test/include/*.h")
   file(GLOB TEST_SOURCES "test/src/*.cpp")
 
@@ -157,3 +161,11 @@ if(TEST_ENABLED)
 
   add_test(COLLADA2GLTFWriterTest ${PROJECT_NAME}-test)
 endif()
+
+include_directories(${GLTF_INCLUDES})
+
+FOREACH(incl ${GLTF_INCLUDES})
+  LIST(APPEND GLTF_INCLUDES_FULL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${incl}")
+ENDFOREACH()
+set_property(GLOBAL PROPERTY GLTF_INCLUDES ${GLTF_INCLUDES_FULL_PATH})
+
