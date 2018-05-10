@@ -3,7 +3,7 @@
 #include "rapidjson/document.h"
 
 #include "ahoy/ahoy.h"
-#include "Utils.h"
+#include "GLTF_Utils.h"
 
 using namespace ahoy;
 using namespace std::experimental::filesystem;
@@ -167,7 +167,7 @@ int main(int argc, const char **argv) {
 			return -1;
 		}
 
-		glTF::Utils::writeAssetToGlTF(asset, options, &outputPath);
+		GLTF::Utils::writeAssetToGlTF(asset, options);
 
 		std::clock_t end = std::clock();
 		std::cout << "Time: " << ((end - start) / (double)(CLOCKS_PER_SEC / 1000)) << " ms" << std::endl;

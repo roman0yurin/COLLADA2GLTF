@@ -14,13 +14,20 @@
 #include "rapidjson/writer.h"
 
 #include "ahoy/ahoy.h"
+#include "../../../c60/gis/map3d/native/djinni_gen/Color.hpp"
 
-namespace glTF {
+namespace GLTF {
 		namespace Utils {
 			/**
 			 * Выгрузить набор 3D данных в glTF формат согласно опциям
 			 **/
-			void writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* options, path *outputPath);
+			void writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* options);
+
+			/*Цвет из четырех-компонентного вектора*/
+			std::optional<djinni_gen::Color> getColor(float *arr);
+
+			/**Цвет в вектор**/
+			float * fromColor(std::optional<djinni_gen::Color> color);
 		};
 }
 

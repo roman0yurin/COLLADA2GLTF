@@ -3,16 +3,17 @@
  * @author Юрин Роман @date 07.05.2018
  **/
 
-#include "Utils.h"
+#include "GLTF_Utils.h"
 const int HEADER_LENGTH = 12;
 const int CHUNK_HEADER_LENGTH = 8;
 
 /**
 * Выгрузить набор 3D данных в glTF формат согласно опциям
 **/
-void glTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* options, path *outputPath){
+void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* options){
+	path outputPath = path(options->outputPath);
 	// Create the output directory if it does not exist
-	path outputDirectory = outputPath->parent_path();
+	path outputDirectory = outputPath.parent_path();
 	if (!std::experimental::filesystem::exists(outputDirectory)) {
 		std::experimental::filesystem::create_directories(outputDirectory);
 	}
@@ -115,7 +116,7 @@ void glTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 			std::cout << "ERROR: couldn't write glTF to path '" << options->outputPath << "'" << std::endl;
 		}
 	} else {
-		FILE* file = fopen(outputPath->generic_string().c_str(), "wb");
+		FILE* file = fopen(outputPath.generic_string().c_str(), "wb");
 		if (file != NULL) {
 			fwrite("glTF", sizeof(char), 4, file); // magic
 

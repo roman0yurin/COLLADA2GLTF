@@ -121,7 +121,7 @@ file(GLOB LIB_HEADERS "include/*.h")
 set(LIB_SOURCES
         src/COLLADA2GLTFWriter.cpp
         src/COLLADA2GLTFExtrasHandler.cpp
-        src/Utils.cpp
+		src/GLTF_Utils.cpp
   )
 add_library(${PROJECT_NAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES})
 if(MSVC)
@@ -134,7 +134,7 @@ endif()
 set(GLTF_INCLUDES dependencies/ahoy/include ${GLTF_INCLUDES})
 add_subdirectory(dependencies/ahoy)
 
-add_executable(${PROJECT_NAME}-bin src/main.cpp src/Utils)
+add_executable(${PROJECT_NAME}-bin src/main.cpp src/GLTF_Utils)
 if(MSVC)
    target_link_libraries(${PROJECT_NAME}-bin ${PROJECT_NAME} ahoy)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
