@@ -5,9 +5,11 @@
 #include "GLTFBufferView.h"
 #include "GLTFConstants.h"
 #include "GLTFObject.h"
+#include "dgn/gltf/GltfAccessor.hpp"
+#include "dgn/gltf/GltfDataStruct.hpp"
 
 namespace GLTF {
-	class Accessor : public GLTF::Object {
+	class Accessor : public GLTF::Object, public dgn::gltf::GltfAccessor {
 	public:
 		enum class Type {
 			SCALAR,
@@ -68,5 +70,25 @@ namespace GLTF {
 
 		virtual std::string typeName();
 		virtual void writeJSON(void* writer, GLTF::Options* options);
+
+		/**Область даных */
+		std::shared_ptr<dgn::gltf::GltfBufferView> getBufferView();
+
+		void setBufferView(const std::shared_ptr<dgn::gltf::GltfBufferView> & view);
+
+		/**Сдвиг внутри области данных */
+		int32_t getByteOffset();
+
+		void setByteOffset(int32_t value);
+
+		/**Количество элементов GltfDataStruct (не байт) */
+		int32_t getCount();
+
+		virtual void setCount(int32_t value);
+
+		/**Структура данных */
+		dgn::gltf::GltfDataStruct getStruct();
+
+		void setStruct(dgn::gltf::GltfDataStruct s);
 	};
 };

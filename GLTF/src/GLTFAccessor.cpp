@@ -8,6 +8,8 @@
 
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include "dgn/gltf/WebglConstants.hpp"
+#include "GLTF_Utils.h"
 
 GLTF::Accessor::Accessor(GLTF::Accessor::Type type,
 	GLTF::Constants::WebGL componentType
@@ -300,4 +302,63 @@ void GLTF::Accessor::writeJSON(void* writer, GLTF::Options* options) {
 	}
 	jsonWriter->Key("type");
 	jsonWriter->String(this->getTypeName());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**Создать доступ к данным */
+std::shared_ptr<dgn::gltf::GltfAccessor> dgn::gltf::GltfAccessor::create(dgn::gltf::GltfDataStruct structType, dgn::gltf::WebglConstants componentType){
+	return std::shared_ptr<dgn::gltf::GltfAccessor>(
+		new GLTF::Accessor(GLTF::Utils::dataStructJava2GLTF(structType), GLTF::Utils::webglJava2GLTF(componentType))
+	);
+}
+
+/**Создать доступ к данным */
+std::shared_ptr<dgn::gltf::GltfAccessor>  dgn::gltf::GltfAccessor::createByData(dgn::gltf::GltfDataStruct structType, dgn::gltf::WebglConstants componentType, const std::vector<uint8_t> & data,  dgn::gltf::WebglConstants target){
+	unsigned char *data_char = new unsigned char[data.size()];
+	memcpy(data_char, data.data(), data.size());
+	return std::shared_ptr<dgn::gltf::GltfAccessor>(
+		new GLTF::Accessor(
+				GLTF::Utils::dataStructJava2GLTF(structType), GLTF::Utils::webglJava2GLTF(componentType),
+				data_char, data.size(),
+				GLTF::Utils::webglJava2GLTF(target)
+		)
+	);
+}
+
+
+/**Область даных */
+std::shared_ptr<dgn::gltf::GltfBufferView> GLTF::Accessor::getBufferView(){
+	return this->bufferView;
+}
+
+void GLTF::Accessor::setBufferView(const std::shared_ptr<dgn::gltf::GltfBufferView> & view){
+	this->bufferView = std::dynamic_pointer_cast<GLTF::BufferView>(view);
+}
+
+/**Сдвиг внутри области данных */
+int32_t GLTF::Accessor::getByteOffset(){
+	return this->byteOffset;
+}
+
+void GLTF::Accessor::setByteOffset(int32_t value){
+	this->byteOffset = value;
+}
+
+/**Количество элементов GltfDataStruct (не байт) */
+int32_t GLTF::Accessor::getCount(){
+	return this->count;
+}
+
+virtual void GLTF::Accessor::setCount(int32_t value){
+	this->count = value;
+}
+
+/**Структура данных */
+dgn::gltf::GltfDataStruct GLTF::Accessor::getStruct(){
+	return GLTF::Utils::dataStructGLTF2Java(this->type);
+}
+
+void GLTF::Accessor::setStruct(dgn::gltf::GltfDataStruct s){
+	this->type = GLTF::Utils::dataStructJava2GLTF(s);
 }

@@ -1,3 +1,4 @@
+#include <GLTF_Utils.h>
 #include "GLTFBufferView.h"
 
 #include "rapidjson/stringbuffer.h"
@@ -46,4 +47,59 @@ void GLTF::BufferView::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->Key("target");
 		jsonWriter->Int((int)this->target);
 	}
+}
+
+
+///-------------------------------------------------------------------------------
+
+/**Описать область буфера (по умолчанию непрерывную) */
+std::shared_ptr<dgn::gltf::GltfBufferView> create(int32_t byteOffset, int32_t byteLength, const std::shared_ptr<dgn::gltf::GltfBuffer> & buffer){
+	return std::shared_ptr<dgn::gltf::GltfBufferView>(
+		new GLTF::BufferView(byteOffset, byteLength, std::dynamic_pointer_cast<GLTF::Buffer>(buffer))
+	);
+}
+
+/**Сдвиг от начала буфера к началу области */
+int32_t GLTF::BufferView::getByteOffset(){
+	return this->byteOffset;
+}
+
+void GLTF::BufferView::setByteOffset(int32_t offset){
+	this->byteOffset = offset;
+}
+
+/**Сдвиг между компонентами. 0 - значения идут подряд */
+int32_t GLTF::BufferView::getByteStride(){
+	return this->byteStride;
+}
+
+void GLTF::BufferView::setByteStride(int32_t stride){
+	this->byteStride = stride;
+}
+
+/**Размер области в байтах */
+int32_t GLTF::BufferView::getByteLength(){
+	return this->byteLength;
+}
+
+void GLTF::BufferView::setByteLength(int32_t len){
+	this->byteLength = len;
+}
+
+/**Буфер из которого читаются данные */
+std::shared_ptr<dgn::gltf::GltfBuffer> GLTF::BufferView::getBuffer(){
+	return this->buffer;
+}
+
+void GLTF::BufferView::setBuffer(const std::shared_ptr<dgn::gltf::GltfBuffer> & b){
+	this->buffer = b;
+}
+
+/**Какая структура WebGL описывается в этой области данных */
+dgn::gltf::WebglConstants GLTF::BufferView::getTarget(){
+	return GLTF::Utils::webglConstGLTF2Java(this->target);
+}
+
+void GLTF::BufferView::setTarget(dgn::gltf::WebglConstants webConst){
+	this->target = GLTF::Utils::webglJava2GLTF(webConst);
 }

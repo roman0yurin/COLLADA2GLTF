@@ -10,9 +10,10 @@
 #include "GLTFScene.h"
 
 #include "draco/compression/encode.h"
+#include "dgn/gltf/GltfAsset.hpp"
 
 namespace GLTF {
-	class Asset : public GLTF::Object {
+	class Asset : public GLTF::Object, public dgn::gltf::GltfAsset {
 	private:
 		std::vector<std::shared_ptr<GLTF::MaterialCommon::Light>> _ambientLights;
 	public:
@@ -64,5 +65,29 @@ namespace GLTF {
 		void requireExtension(std::string extension);
 		void useExtension(std::string extension);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
+
+
+
+
+		//---------------------------------------------------------------------------------
+
+		/**Создать новый экземпляр */
+		std::shared_ptr<dgn::gltf::GltfAsset> create(){
+			return std::shared_ptr<dgn::gltf::GltfAsset>(
+				new GLTF::Asset()
+			);
+		}
+
+		/**Список корневых объектов сцены */
+		std::vector<std::shared_ptr<dgn::gltf::GltfNode>> getNodes(){
+			std::vector<std::shared_ptr<Node>> &nd = this->getDefaultScene()->nodes;
+			return std::vector<std::shared_ptr<dgn::gltf::GltfNode>>(nd.begin(), nd.end());
+		}
+
+		void setNodes(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & nd){
+			this->getDefaultScene()->nodes = std::vector<std::shared_ptr<GLTF::Node>>(
+					nd.begin(), nd.end()
+			);
+		}
 	};
 }

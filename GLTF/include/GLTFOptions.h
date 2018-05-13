@@ -3,11 +3,12 @@
 #include <string>
 #include <vector>
 #include <experimental/filesystem>
+#include "dgn/gltf/GltfOptions.hpp"
 
 using namespace std::experimental::filesystem;
 
 namespace GLTF {
-	class Options {
+	class Options : public dgn::gltf::GltfOptions{
 	public:
 		std::string name;
 		bool embeddedBuffers = true;

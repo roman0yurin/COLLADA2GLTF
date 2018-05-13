@@ -6,6 +6,7 @@
 #include "GLTFObject.h"
 #include "GLTFTechnique.h"
 #include "GLTFTexture.h"
+#include "dgn/gltf/MaterialCommon.hpp"
 
 namespace GLTF {
 	class Material : public GLTF::Object {
@@ -97,7 +98,7 @@ namespace GLTF {
 		void writeJSON(void* writer, GLTF::Options* options);
 	};
 
-	class MaterialCommon : public GLTF::Material {
+	class MaterialCommon : public GLTF::Material, public dgn::gltf::MaterialCommon {
 	public:
 		enum Technique {
 			BLINN,

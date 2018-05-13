@@ -15,7 +15,7 @@ endif()
 option(test "Build all tests." OFF)
 
 # RapidJSON
-include_directories(dependencies/rapidjson/include)
+include_directories(dependencies/rapidjson/include ../include)
 
 # Draco
 include_directories(dependencies/draco/src)

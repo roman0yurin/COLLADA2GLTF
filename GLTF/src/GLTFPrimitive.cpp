@@ -1,7 +1,9 @@
+#include <GLTF_Utils.h>
 #include "GLTFPrimitive.h"
 
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include "dgn/gltf/GltfAttributeType.hpp"
 
 std::shared_ptr<GLTF::Object> GLTF::Primitive::clone(std::shared_ptr<GLTF::Object> clone) {
 	auto const primitive = std::dynamic_pointer_cast<GLTF::Primitive>(clone);
@@ -86,4 +88,51 @@ void GLTF::Primitive::Target::writeJSON(void* writer, Options* options) {
 		jsonWriter->Int(attribute.second->id);
 	}
 	jsonWriter->EndObject();
+}
+
+
+//-----------------------------------------------------------------------------------
+
+/**Создать новый экземпляр */
+std::shared_ptr<dgn::gltf::GltfPrimitive> dgn::gltf::GltfPrimitive::create(){
+	return std::shared_ptr<dgn::gltf::GltfPrimitive>(
+		new GLTF::Primitive()
+	);
+}
+
+/**Доступ к данным для соответствующего атрибута */
+std::shared_ptr<dgn::gltf::GltfAccessor> GLTF::Primitive::getAttribute(dgn::gltf::GltfAttributeType tp){
+	auto iter =  this->attributes.find(
+			GLTF::Utils::attrTypeJava2Gltf(tp)
+	);
+	return iter != this->attributes.end() ?
+		   		iter->second:
+		   		std::shared_ptr<dgn::gltf::GltfAccessor>();
+}
+
+void GLTF::Primitive::setAttribute(dgn::gltf::GltfAttributeType tp, const std::shared_ptr<dgn::gltf::GltfAccessor> & accessor){
+	auto const key = GLTF::Utils::attrTypeJava2Gltf(tp);
+	if(accessor){
+		this->attributes[key] = std::dynamic_pointer_cast<GLTF::Accessor>(accessor);
+	}else{
+		this->attributes.erase(key);
+	}
+}
+
+/**Материал задает графические свойства поверхности */
+std::shared_ptr<dgn::gltf::MaterialCommon> GLTF::Primitive::getMaterial(){
+	return std::dynamic_pointer_cast<dgn::gltf::MaterialCommon>(this->material);
+}
+
+void GLTF::Primitive::setMaterial(const std::shared_ptr<dgn::gltf::MaterialCommon> & m){
+	this->material = std::dynamic_pointer_cast<GLTF::Material>(m);
+}
+
+/**задет список вершин для построения примитивов */
+std::shared_ptr<dgn::gltf::GltfAccessor> GLTF::Primitive::getIndexes(){
+	return this->indices;
+}
+
+void GLTF::Primitive::setIndexes(const std::shared_ptr<dgn::gltf::GltfAccessor> & idx){
+	this->indices = std::dynamic_pointer_cast<GLTF::Accessor>(idx);
 }

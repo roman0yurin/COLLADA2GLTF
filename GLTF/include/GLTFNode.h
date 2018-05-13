@@ -8,9 +8,10 @@
 #include "GLTFMesh.h"
 #include "GLTFObject.h"
 #include "GLTFSkin.h"
+#include "dgn/gltf/GltfNode.hpp"
 
 namespace GLTF {
-	class Node : public GLTF::Object {
+	class Node : public GLTF::Object, public dgn::gltf::GltfNode {
 	public:
 		Node();
 		class Transform : public std::enable_shared_from_this<Transform>{
@@ -67,5 +68,22 @@ namespace GLTF {
 		virtual std::string typeName();
 		virtual std::shared_ptr<GLTF::Object> clone(std::shared_ptr<GLTF::Object> clone);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
+
+		//--------------------------------------------------------------------------------
+
+		/**Идентификатор или имя объекта сцены */
+		std::optional<std::string> getName();
+
+		void setName(const std::optional<std::string> & nm);
+
+		/**Дочерние узля сцены */
+		std::vector<std::shared_ptr<GltfNode>> getChildren();
+
+		void setChildren(const std::vector<std::shared_ptr<GltfNode>> & ch);
+
+		/**Матрица преобразования 4x4 перечисление элементов по колонкам */
+		std::optional<std::vector<float>> getMatrix();
+
+		void setMatrix(const std::vector<float> & m);
 	};
 }

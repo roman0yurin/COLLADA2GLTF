@@ -43,3 +43,24 @@ void GLTF::Mesh::writeJSON(void* writer, GLTF::Options* options) {
 	}
 	GLTF::Object::writeJSON(writer, options);
 }
+
+
+//---------------------------------------------------------------------------------------------
+
+/**Новый экземпляр графического объекта */
+std::shared_ptr<dgn::gltf::GltfMesh> dgn::gltf::GltfMesh::create(const std::vector<std::shared_ptr<GltfPrimitive>> & primitives){
+	auto const mesh = std::shared_ptr<dgn::gltf::GltfMesh>(
+		new GLTF::Mesh()
+	);
+	mesh->setPrimitives(primitives);
+	return mesh;
+}
+
+/**Набор графических примитивов, составляющих данный объект */
+std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>> GLTF::Mesh::getPrimitives(){
+	return reinterpret_cast<std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>>>(this->primitives);
+}
+
+void GLTF::Mesh::setPrimitives(const std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>> & p){
+	this->primitives = reinterpret_cast<std::vector<std::shared_ptr<GLTF::Primitive>>>(p);
+}

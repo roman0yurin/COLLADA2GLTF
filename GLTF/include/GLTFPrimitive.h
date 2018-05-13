@@ -7,9 +7,10 @@
 #include "GLTFDracoExtension.h"
 #include "GLTFMaterial.h"
 #include "GLTFObject.h"
+#include "dgn/gltf/GltfPrimitive.hpp"
 
 namespace GLTF {
-	class Primitive : public GLTF::Object {
+	class Primitive : public GLTF::Object, public dgn::gltf::GltfPrimitive {
 	public:
 		enum Mode {
 			UNKNOWN = -1,
@@ -38,5 +39,22 @@ namespace GLTF {
 
 		virtual std::shared_ptr<GLTF::Object> clone(std::shared_ptr<GLTF::Object> clone);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
+
+
+		//-----------------------------------------------------------------------------------
+		/**Доступ к данным для соответствующего атрибута */
+		std::shared_ptr<dgn::gltf::GltfAccessor> getAttribute(dgn::gltf::GltfAttributeType tp);
+
+		void setAttribute(dgn::gltf::GltfAttributeType tp, const std::shared_ptr<dgn::gltf::GltfAccessor> & accessor);
+
+		/**Материал задает графические свойства поверхности */
+		std::shared_ptr<dgn::gltf::MaterialCommon> getMaterial();
+
+		void setMaterial(const std::shared_ptr<dgn::gltf::MaterialCommon> & m);
+
+		/**задет список вершин для построения примитивов */
+		std::shared_ptr<dgn::gltf::GltfAccessor> getIndexes();
+
+		void setIndexes(const std::shared_ptr<dgn::gltf::GltfAccessor> & idx);
 	};
 }

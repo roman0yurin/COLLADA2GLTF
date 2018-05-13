@@ -364,3 +364,53 @@ void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
 	}
 	GLTF::Object::writeJSON(writer, options);
 }
+
+//--------------------------------------------------------------------------------
+
+/**Создать объект сцены */
+std::shared_ptr<dgn::gltf::GltfNode> dgn::gltf::GltfNode::create(){
+	return std::shared_ptr<GLTF::Node>(
+		new GLTF::Node()
+	);
+}
+
+/**Идентификатор или имя объекта сцены */
+std::optional<std::string>  GLTF::Node::getName(){
+	return this->name;
+}
+
+void GLTF::Node::setName(const std::optional<std::string> & nm){
+	if(nm.has_value())
+		this->name = nm.value();
+	else
+		this->name.clear();
+}
+
+
+/**Дочерние узля сцены */
+std::vector<std::shared_ptr<dgn::gltf::GltfNode>> GLTF::Node::getChildren(){
+	return reinterpret_cast<std::vector<std::shared_ptr<dgn::gltf::GltfNode>>>(this->children);
+}
+
+void GLTF::Node::setChildren(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & ch){
+	this->children = reinterpret_cast<std::vector<std::shared_ptr<GLTF::Node>>(ch);
+}
+
+/**Матрица преобразования 4x4 перечисление элементов по колонкам */
+std::optional<std::vector<float>> GLTF::Node::getMatrix(){
+	if(this->transform && this->transform->type == Transform::Type::MATRIX)
+		return std::optional(
+			 std::vector(std::dynamic_pointer_cast<TransformMatrix>(this->transform)->matrix)
+		);
+	else
+		return std::nullopt;
+}
+
+void GLTF::Node::setMatrix(const std::vector<float> & m){
+	if(m.size() > 0){
+		assert(m.size() == 16);
+		TransformMatrix *matrix = new TransformMatrix();
+		memcpy(matrix->matrix, m.data(), 16);
+		this->transform.reset(matrix);
+	}
+}
