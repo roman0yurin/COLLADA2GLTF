@@ -7,15 +7,19 @@
 namespace GLTF {
 	class BufferView : public GLTF::Object {
 	public:
-		GLTF::Buffer* buffer = NULL;
+		std::shared_ptr<GLTF::Buffer> buffer;
 		int byteOffset = 0;
 		int byteStride = 0;
 		int byteLength = 0;
 		GLTF::Constants::WebGL target = (GLTF::Constants::WebGL)-1;
 
-		BufferView(int byteOffset, int byteLength, GLTF::Buffer* buffer);
-		BufferView(unsigned char* data, int dataLength);
-		BufferView(unsigned char* data,
+		BufferView(int byteOffset, int byteLength, std::shared_ptr<GLTF::Buffer> buffer);
+
+		/**Становится собственником data**/
+		BufferView(std::vector<uint8_t> *data, int dataLength);
+
+		/**Становится собственником data**/
+		BufferView(std::vector<uint8_t> *data,
 			int dataLength,
 			GLTF::Constants::WebGL target
 		);

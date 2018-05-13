@@ -19,14 +19,14 @@ namespace COLLADA2GLTF {
 			const COLLADAFW::UniqueId& uniqueId,
 			COLLADAFW::Object* object);
 
-		COLLADASaxFWL::Loader* _loader;
+		std::shared_ptr<COLLADASaxFWL::Loader> _loader;
 		COLLADAFW::UniqueId _currentId;
 		bool _inBump = false;
 		bool _inDoubleSided = false;
 	public:
 		std::set<COLLADAFW::UniqueId> lockAmbientDiffuse;
-		COLLADAFW::TextureAttributes* bumpTexture = NULL;
+		std::shared_ptr<COLLADAFW::TextureAttributes> bumpTexture;
 		std::set<COLLADAFW::UniqueId> doubleSided;
-		ExtrasHandler(COLLADASaxFWL::Loader* loader) : _loader(loader) {};
+		ExtrasHandler(std::shared_ptr<COLLADASaxFWL::Loader> loader) : _loader(loader) {};
 	};
 }

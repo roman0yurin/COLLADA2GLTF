@@ -17,10 +17,10 @@ void GLTF::Shader::writeJSON(void* writer, GLTF::Options* options) {
 	jsonWriter->Key("type");
 	jsonWriter->Int((int)type);
 	jsonWriter->Key("uri");
+	std::unique_ptr<std::vector<uint8_t>> data(new std::vector<uint8_t >(source.begin(), source.end()));
 	if (options->embeddedShaders) {
-		uri = "data:text/plain;base64," + std::string(Base64::encode((unsigned char*)source.c_str(), source.length()));
-	}
-	else {
+		uri = "data:text/plain;base64," + std::string(Base64::encode(data.get(), source.length()));
+	} else {
 		uri = options->name + std::to_string(id) + (type == GLTF::Constants::WebGL::VERTEX_SHADER ? ".vert" : ".frag");
 	}
 	jsonWriter->String(uri.c_str());

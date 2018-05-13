@@ -4,8 +4,8 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
-GLTF::Buffer::Buffer(unsigned char* data, int dataLength) {
-	this->data = data;
+GLTF::Buffer::Buffer(std::vector<uint8_t> *data, int dataLength){
+	this->data.reset(data);
 	this->byteLength = dataLength;
 }
 
@@ -20,7 +20,7 @@ void GLTF::Buffer::writeJSON(void* writer, GLTF::Options* options) {
 	if (!options->binary || !options->embeddedBuffers) {
 		jsonWriter->Key("uri");
 		if (options->embeddedBuffers) {
-			uri = "data:application/octet-stream;base64," + std::string(Base64::encode(this->data, this->byteLength));
+			uri = "data:application/octet-stream;base64," + std::string(Base64::encode(this->data.get(), this->byteLength));
 		}
 		else {
 			uri = options->name + std::to_string(id) + ".bin";

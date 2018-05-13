@@ -21,7 +21,7 @@ namespace GLTF {
 			/**
 			 * Выгрузить набор 3D данных в glTF формат согласно опциям
 			 **/
-			void writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* options);
+			void writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2GLTF::Options* options);
 
 			/*Цвет из четырех-компонентного вектора*/
 			std::optional<djinni_gen::Color> getColor(float *arr);

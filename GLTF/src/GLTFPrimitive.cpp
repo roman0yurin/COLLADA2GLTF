@@ -3,18 +3,18 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
-GLTF::Object* GLTF::Primitive::clone(GLTF::Object* clone) {
-	GLTF::Primitive* primitive = dynamic_cast<GLTF::Primitive*>(clone);
+std::shared_ptr<GLTF::Object> GLTF::Primitive::clone(std::shared_ptr<GLTF::Object> clone) {
+	auto const primitive = std::dynamic_pointer_cast<GLTF::Primitive>(clone);
 	if (primitive != NULL) {
-		primitive->attributes = std::map<std::string, GLTF::Accessor*>();
+		primitive->attributes = std::map<std::string, std::shared_ptr<GLTF::Accessor>>();
 		for (const auto& attribute : this->attributes) {
 			primitive->attributes.insert(attribute);
 		}
 		primitive->indices = this->indices;
 		primitive->material = this->material;
 		primitive->mode = this->mode;
-		primitive->targets = std::vector<Target*>();
-		for (auto* target : this->targets) {
+		primitive->targets = std::vector<std::shared_ptr<Target>>();
+		for (std::shared_ptr<Target> target : this->targets) {
 			primitive->targets.push_back(target);
 		}
 	}
@@ -59,7 +59,7 @@ void GLTF::Primitive::writeJSON(void* writer, Options* options) {
 	if (!this->targets.empty()) {
 		jsonWriter->Key("targets");
 		jsonWriter->StartArray();
-		for (auto* target : this->targets) {
+		for (std::shared_ptr<Primitive::Target> target : this->targets) {
 			target->writeJSON(writer, options);
 		}
 		jsonWriter->EndArray();
@@ -70,7 +70,7 @@ void GLTF::Primitive::writeJSON(void* writer, Options* options) {
 GLTF::Primitive::Target* GLTF::Primitive::Target::clone(Object* clone) {
 	Target* target = dynamic_cast<Target*>(clone);
 	if (target != nullptr) {
-		target->attributes = std::map<std::string, Accessor*>();
+		target->attributes = std::map<std::string, std::shared_ptr<Accessor>>();
 		for (const auto& attribute : this->attributes) {
 			target->attributes.insert(attribute);
 		}

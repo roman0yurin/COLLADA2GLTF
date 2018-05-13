@@ -23,7 +23,7 @@ void GLTF::Technique::writeJSON(void* writer, GLTF::Options* options) {
 	for (auto parameter : parameters) {
 		jsonWriter->Key(parameter.first.c_str());
 		jsonWriter->StartObject();
-		GLTF::Technique::Parameter* parameterValue = parameter.second;
+		GLTF::Technique::Parameter* parameterValue = parameter.second.get();
 		std::string semantic = parameterValue->semantic;
 		if (semantic != "") {
 			jsonWriter->Key("semantic");
@@ -82,7 +82,7 @@ void GLTF::Technique::writeJSON(void* writer, GLTF::Options* options) {
 		}
 		if (depthMask != NULL) {
 			jsonWriter->Key("depthMask");
-			jsonWriter->Bool(depthMask[0]);
+			jsonWriter->Bool(*depthMask.get());
 		}
 		if (blendEquationSeparate.size() > 0 || blendFuncSeparate.size() > 0) {
 			jsonWriter->Key("functions");

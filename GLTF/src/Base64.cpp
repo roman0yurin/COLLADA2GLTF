@@ -7,26 +7,27 @@ static inline bool is_base64(unsigned char c) {
 }
 
 static const std::string base64CharSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-char* Base64::encode(unsigned char* data, size_t length) {
+std::string Base64::encode(std::vector<uint8_t> *data, size_t length) {
 	size_t base64Length = (size_t)(ceil(length / 3.0) * 4) + 1;
-	char* base64 = new char[base64Length];
+	std::string result(base64Length, 0);
+	char* base64 = result.data();
 	int index;
 	int j = 0;
 	for (size_t i = 0; i < length; i += 3) {
-		index = (data[i] & 0xFC) >> 2;
+		index = ((*data)[i] & 0xFC) >> 2;
 		base64[j] = base64CharSet[index];
 		j++;
-		index = (data[i] & 0x03) << 4;
+		index = ((*data)[i] & 0x03) << 4;
 		if (i + 1 < length) {
-			index |= (data[i + 1] & 0xF0) >> 4;
+			index |= ((*data)[i + 1] & 0xF0) >> 4;
 			base64[j] = base64CharSet[index];
 			j++;
-			index = (data[i + 1] & 0x0F) << 2;
+			index = ((*data)[i + 1] & 0x0F) << 2;
 			if (i + 2 < length) {
-				index |= (data[i + 2] & 0xC0) >> 6;
+				index |= ((*data)[i + 2] & 0xC0) >> 6;
 				base64[j] = base64CharSet[index];
 				j++;
-				index = data[i + 2] & 0x3F;
+				index = (*data)[i + 2] & 0x3F;
 				base64[j] = base64CharSet[index];
 				j++;
 			}
@@ -42,7 +43,7 @@ char* Base64::encode(unsigned char* data, size_t length) {
 		}
 	}
 	base64[base64Length - 1] = '\0';
-	return base64;
+	return result;
 }
 
 std::string Base64::decode(std::string string) {

@@ -20,9 +20,9 @@ GLTF::Accessor::Accessor(GLTF::Accessor::Type type,
 	GLTF::Constants::WebGL target
 ) : Accessor(type, componentType) {
 	int byteLength = count * this->getNumberOfComponents() * this->getComponentByteLength();
-	unsigned char* allocatedData = (unsigned char*)malloc(byteLength);
-	std::memcpy(allocatedData, data, byteLength);
-	this->bufferView = new GLTF::BufferView(allocatedData, byteLength, target);
+	std::vector<uint8_t> *allocatedData = new std::vector<uint8_t>(byteLength, 0);
+	std::memcpy(allocatedData->data(), data, byteLength);
+	this->bufferView = std::shared_ptr<GLTF::BufferView>(new GLTF::BufferView(allocatedData, byteLength, target));
 	this->count = count;
 	this->computeMinMax();
 }
@@ -31,9 +31,9 @@ GLTF::Accessor::Accessor(GLTF::Accessor::Type type,
 	GLTF::Constants::WebGL componentType,
 	unsigned char* data,
 	int count,
-	GLTF::BufferView* bufferView
+	std::shared_ptr<GLTF::BufferView> bufferView
 ) : Accessor(type, componentType) {
-	GLTF::Buffer* buffer = bufferView->buffer;
+	std::shared_ptr<GLTF::Buffer> buffer = bufferView->buffer;
 	this->bufferView = bufferView;
 	this->byteOffset = bufferView->byteLength;
 	this->count = count;
@@ -45,9 +45,8 @@ GLTF::Accessor::Accessor(GLTF::Accessor::Type type,
 		padding = componentByteLength - padding;
 	}
 	this->byteOffset += padding;
-
-	buffer->data = (unsigned char*)realloc(buffer->data, buffer->byteLength + padding + byteLength);
-	std::memcpy(buffer->data + buffer->byteLength + padding, data, byteLength);
+	buffer->data->resize(buffer->byteLength + padding + byteLength, 0);
+	std::memcpy(buffer->data->data() + buffer->byteLength + padding, data, byteLength);
 	buffer->byteLength += byteLength + padding;
 	bufferView->byteLength += byteLength + padding;
 	this->computeMinMax();
@@ -57,7 +56,7 @@ GLTF::Accessor::Accessor(GLTF::Accessor::Type type,
 	GLTF::Constants::WebGL componentType,
 	int byteOffset,
 	int count,
-	GLTF::BufferView* bufferView
+	std::shared_ptr<GLTF::BufferView> bufferView
 ) : Accessor(type, componentType) {
 	this->byteOffset = byteOffset;
 	this->count = count;
@@ -69,12 +68,12 @@ bool GLTF::Accessor::computeMinMax() {
 	int count = this->count;
 	if (count > 0) {
 		if (max == NULL) {
-			max = new float[numberOfComponents];
+			max.reset(new float[numberOfComponents]);
 		}
 		if (min == NULL) {
-			min = new float[numberOfComponents];
+			min.reset(new float[numberOfComponents]);
 		}
-		float* component = new float[numberOfComponents];
+		float component[numberOfComponents];
 		this->getComponentAtIndex(0, component);
 		for (int i = 0; i < numberOfComponents; i++) {
 			min[i] = component[i];
@@ -102,7 +101,7 @@ bool GLTF::Accessor::getComponentAtIndex(int index, float* component) {
 	int byteOffset = this->byteOffset + this->bufferView->byteOffset;
 	int numberOfComponents = this->getNumberOfComponents();
 	byteOffset += this->getByteStride() * index;
-	unsigned char* buf = this->bufferView->buffer->data + byteOffset;
+	unsigned char* buf = this->bufferView->buffer->data->data() + byteOffset;
 
 	for (int i = 0; i < numberOfComponents; i++) {
 		switch (this->componentType) {
@@ -135,7 +134,7 @@ bool GLTF::Accessor::writeComponentAtIndex(int index, float* component) {
 	int byteOffset = this->byteOffset + this->bufferView->byteOffset;
 	int numberOfComponents = this->getNumberOfComponents();
 	byteOffset += this->getByteStride() * index;
-	unsigned char* buf = this->bufferView->buffer->data + byteOffset;
+	unsigned char* buf = this->bufferView->buffer->data->data() + byteOffset;
 
 	for (int i = 0; i < numberOfComponents; i++) {
 		switch (this->componentType) {
@@ -231,8 +230,8 @@ bool GLTF::Accessor::equals(GLTF::Accessor* accessor) {
 		return false;
 	}
 	int numberOfComponents = getNumberOfComponents();
-	float* componentOne = new float[numberOfComponents];
-	float* componentTwo = new float[numberOfComponents];
+	float componentOne[numberOfComponents];
+	float componentTwo[numberOfComponents];
 	for (int i = 0; i < count; i++) {
 		this->getComponentAtIndex(i, componentOne);
 		accessor->getComponentAtIndex(i, componentTwo);

@@ -12,7 +12,8 @@
 namespace GLTF {
 	class Node : public GLTF::Object {
 	public:
-		class Transform {
+		Node();
+		class Transform : public std::enable_shared_from_this<Transform>{
 		public:
 			enum Type {
 				TRS,
@@ -33,12 +34,12 @@ namespace GLTF {
 				float a20, float a21, float a22, float a23, 
 				float a30, float a31, float a32, float a33);
 
-			void premultiply(TransformMatrix* transform);
-			void premultiply(TransformMatrix* transform, TransformMatrix* destination);
+			void premultiply(std::shared_ptr<TransformMatrix> transform);
+			void premultiply(std::shared_ptr<TransformMatrix> transform, std::shared_ptr<TransformMatrix> destination);
 			void scaleUniform(float scale);
 			bool isIdentity();
-			void getTransformTRS(TransformTRS* out);
-			TransformTRS* getTransformTRS();
+			void getTransformTRS(std::shared_ptr<TransformTRS> out);
+			std::shared_ptr<TransformTRS> getTransformTRS();
 		};
 
 		class TransformTRS : public Transform {
@@ -51,20 +52,20 @@ namespace GLTF {
 			bool isIdentityTranslation();
 			bool isIdentityRotation();
 			bool isIdentityScale();
-			TransformMatrix* getTransformMatrix();
+			std::shared_ptr<TransformMatrix> getTransformMatrix();
 		};
 
-		GLTF::Camera* camera;
-		std::vector<GLTF::Node*> children;
-		GLTF::Skin* skin = NULL;
+		std::shared_ptr<GLTF::Camera> camera;
+		std::vector<std::shared_ptr<GLTF::Node>> children;
+		std::shared_ptr<GLTF::Skin> skin;
 		std::string jointName;
-		GLTF::Mesh* mesh = NULL;
-		GLTF::MaterialCommon::Light* light = NULL;
+		std::shared_ptr<GLTF::Mesh> mesh;
+		std::shared_ptr<GLTF::MaterialCommon::Light> light;
 
-		Transform* transform = NULL;
+		std::shared_ptr<Transform> transform ;
 
 		virtual std::string typeName();
-		virtual GLTF::Object* clone(GLTF::Object* clone);
+		virtual std::shared_ptr<GLTF::Object> clone(std::shared_ptr<GLTF::Object> clone);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
 	};
 }

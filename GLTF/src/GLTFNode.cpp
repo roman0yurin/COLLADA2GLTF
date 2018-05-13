@@ -5,6 +5,10 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
+GLTF::Node::Node(){
+	assert(!this->skin);
+}
+
 GLTF::Node::TransformMatrix::TransformMatrix() {
 	this->type = GLTF::Node::Transform::MATRIX;
 	this->matrix[0] = 1;
@@ -51,11 +55,11 @@ GLTF::Node::TransformTRS::TransformTRS() {
 	this->type = GLTF::Node::Transform::TRS;
 }
 
-void GLTF::Node::TransformMatrix::premultiply(GLTF::Node::TransformMatrix* transform) {
-	premultiply(transform, this);
+void GLTF::Node::TransformMatrix::premultiply(std::shared_ptr<GLTF::Node::TransformMatrix> transform) {
+	premultiply(transform, std::reinterpret_pointer_cast<GLTF::Node::TransformMatrix>(this->shared_from_this()));
 }
 
-void GLTF::Node::TransformMatrix::premultiply(GLTF::Node::TransformMatrix* transform, GLTF::Node::TransformMatrix* destination) {
+void GLTF::Node::TransformMatrix::premultiply(std::shared_ptr<GLTF::Node::TransformMatrix> transform, std::shared_ptr<GLTF::Node::TransformMatrix> destination) {
 	float matrix[16];
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) {
@@ -105,14 +109,14 @@ bool GLTF::Node::TransformTRS::isIdentityScale() {
 }
 
 
-GLTF::Node::TransformTRS* GLTF::Node::TransformMatrix::getTransformTRS() {
-	GLTF::Node::TransformTRS* trs = new GLTF::Node::TransformTRS();
+std::shared_ptr<GLTF::Node::TransformTRS> GLTF::Node::TransformMatrix::getTransformTRS() {
+	std::shared_ptr<GLTF::Node::TransformTRS> trs(new GLTF::Node::TransformTRS());
 	getTransformTRS(trs);
 	return trs;
 }
 
 const int rotationMatrixNext[3] = { 1, 2, 0 };
-void GLTF::Node::TransformMatrix::getTransformTRS(GLTF::Node::TransformTRS* trs) {
+void GLTF::Node::TransformMatrix::getTransformTRS(std::shared_ptr<GLTF::Node::TransformTRS> trs) {
 	// get translation
 	trs->translation[0] = matrix[12];
 	trs->translation[1] = matrix[13];
@@ -168,8 +172,8 @@ void GLTF::Node::TransformMatrix::getTransformTRS(GLTF::Node::TransformTRS* trs)
 	trs->scale[2] = sqrtf(matrix[8] * matrix[8] + matrix[9] * matrix[9] + matrix[10] * matrix[10]);
 }
 
-GLTF::Node::TransformMatrix* GLTF::Node::TransformTRS::getTransformMatrix() {
-	GLTF::Node::TransformMatrix* result = new GLTF::Node::TransformMatrix();
+std::shared_ptr<GLTF::Node::TransformMatrix> GLTF::Node::TransformTRS::getTransformMatrix() {
+	std::shared_ptr<GLTF::Node::TransformMatrix> result(new GLTF::Node::TransformMatrix());
 	float scaleX = scale[0];
 	float scaleY = scale[1];
 	float scaleZ = scale[2];
@@ -226,12 +230,12 @@ std::string GLTF::Node::typeName() {
 	return "node";
 }
 
-GLTF::Object* GLTF::Node::clone(GLTF::Object* clone) {
-	GLTF::Node* node = dynamic_cast<GLTF::Node*>(clone);
+std::shared_ptr<GLTF::Object> GLTF::Node::clone(std::shared_ptr<GLTF::Object> clone) {
+	std::shared_ptr<GLTF::Node> node = std::dynamic_pointer_cast<GLTF::Node>(clone);
 	if (node != NULL) {
 		node->camera = camera;
-		for (GLTF::Node* child : children) {
-			GLTF::Node* cloneChild = new GLTF::Node();
+		for (auto const child : children) {
+			std::shared_ptr<GLTF::Node> cloneChild(new GLTF::Node());
 			child->clone(cloneChild);
 			node->children.push_back(cloneChild);
 		}
@@ -263,7 +267,7 @@ void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
 	if (children.size() > 0) {
 		jsonWriter->Key("children");
 		jsonWriter->StartArray();
-		for (GLTF::Node* child : children) {
+		for (auto const child : children) {
 			if (options->version == "1.0") {
 				jsonWriter->String(child->getStringId().c_str());
 			}
@@ -294,7 +298,7 @@ void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
 	}
 	if (transform != NULL) {
 		if (transform->type == GLTF::Node::Transform::MATRIX) {
-			GLTF::Node::TransformMatrix* transformMatrix = (GLTF::Node::TransformMatrix*)transform;
+			GLTF::Node::TransformMatrix* transformMatrix = (GLTF::Node::TransformMatrix*)transform.get();
 			if (!transformMatrix->isIdentity()) {
 				jsonWriter->Key("matrix");
 				jsonWriter->StartArray();
@@ -304,7 +308,7 @@ void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
 				jsonWriter->EndArray();
 			}
 		} else if (transform->type == GLTF::Node::Transform::TRS) {
-			GLTF::Node::TransformTRS* transformTRS = (GLTF::Node::TransformTRS*)transform;
+			GLTF::Node::TransformTRS* transformTRS = (GLTF::Node::TransformTRS*)transform.get();
 			if (!transformTRS->isIdentityTranslation()) {
 				jsonWriter->Key("translation");
 				jsonWriter->StartArray();
@@ -337,10 +341,11 @@ void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->Key("skin");
 		if (options->version == "1.0") {
 			jsonWriter->String(skin->getStringId().c_str());
-			if (skin->skeleton != NULL) {
+			const std::shared_ptr<Node> &skl = skin->skeleton.lock();
+			if (skl != NULL) {
 				jsonWriter->Key("skeletons");
 				jsonWriter->StartArray();
-				jsonWriter->String(skin->skeleton->getStringId().c_str());
+				jsonWriter->String(skl->getStringId().c_str());
 				jsonWriter->EndArray();
 			}
 		}

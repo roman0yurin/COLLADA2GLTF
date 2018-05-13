@@ -27,9 +27,10 @@ void GLTF::Animation::writeJSON(void* writer, GLTF::Options* options) {
 	jsonWriter->Key("channels");
 	jsonWriter->StartArray();
 
-	std::vector<GLTF::Animation::Sampler*> samplers;
-	for (GLTF::Animation::Channel* channel : channels) {
-		if (channel->target->node->id >= 0) {
+	std::vector<std::shared_ptr<GLTF::Animation::Sampler>> samplers;
+	for (auto const channel : channels) {
+		const std::shared_ptr<Node> &ndRef = channel->target->node.lock();
+		if (ndRef && ndRef->id >= 0) {
 			if (channel->sampler->id < 0) {
 				channel->sampler->id = samplers.size();
 				channel->sampler->path = channel->target->path;
@@ -48,7 +49,7 @@ void GLTF::Animation::writeJSON(void* writer, GLTF::Options* options) {
 		std::map<std::string, std::string>::iterator findParameter;
 		std::map<std::string, int> pathCounts;
 		std::map<std::string, int>::iterator findPathCount;
-		for (GLTF::Animation::Sampler* sampler : samplers) {
+		for (auto const sampler : samplers) {
 			std::string inputString = "TIME";
 			std::string inputAccessorId = sampler->input->getStringId();
 			if (timeIndex > 0) {
@@ -97,7 +98,7 @@ void GLTF::Animation::writeJSON(void* writer, GLTF::Options* options) {
 	else {
 		jsonWriter->StartArray();
 	}
-	for (GLTF::Animation::Sampler* sampler : samplers) {
+	for (auto const sampler : samplers) {
 		if (options->version == "1.0") {
 			jsonWriter->Key(sampler->getStringId().c_str());
 		}
@@ -164,11 +165,11 @@ void GLTF::Animation::Channel::Target::writeJSON(void* writer, GLTF::Options* op
 	
 	if (options->version == "1.0") {
 		jsonWriter->Key("id");
-		jsonWriter->String(node->getStringId().c_str());
+		jsonWriter->String(node.lock()->getStringId().c_str());
 	}
 	else {
 		jsonWriter->Key("node");
-		jsonWriter->Int(node->id);
+		jsonWriter->Int(node.lock()->id);
 	}
 	jsonWriter->Key("path");
 	jsonWriter->String(pathString(path).c_str());

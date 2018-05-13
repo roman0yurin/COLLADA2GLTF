@@ -3,19 +3,19 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
-GLTF::BufferView::BufferView(int byteOffset, int byteLength, GLTF::Buffer* buffer) {
+GLTF::BufferView::BufferView(int byteOffset, int byteLength, std::shared_ptr<GLTF::Buffer> buffer){
+	this->buffer = buffer;
 	this->byteOffset = byteOffset;
 	this->byteLength = byteLength;
-	this->buffer = buffer;
 }
 
-GLTF::BufferView::BufferView(unsigned char* data, int dataLength) {
+GLTF::BufferView::BufferView(std::vector<unsigned char> *data, int dataLength){
+	this->buffer = std::shared_ptr<GLTF::Buffer>(new Buffer(data, dataLength));
 	this->byteOffset = 0;
 	this->byteLength = dataLength;
-	this->buffer = new Buffer(data, dataLength);
 }
 
-GLTF::BufferView::BufferView(unsigned char* data, int dataLength, GLTF::Constants::WebGL target) : GLTF::BufferView::BufferView(data, dataLength) {
+GLTF::BufferView::BufferView(std::vector<uint8_t> *data, int dataLength, GLTF::Constants::WebGL target) : GLTF::BufferView::BufferView(data, dataLength) {
 	this->target = target;
 }
 

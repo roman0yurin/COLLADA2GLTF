@@ -10,7 +10,7 @@ const int CHUNK_HEADER_LENGTH = 8;
 /**
 * Выгрузить набор 3D данных в glTF формат согласно опциям
 **/
-void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* options){
+void GLTF::Utils::writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2GLTF::Options* options){
 	path outputPath = path(options->outputPath);
 	// Create the output directory if it does not exist
 	path outputDirectory = outputPath.parent_path();
@@ -27,7 +27,7 @@ void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 		asset->compressPrimitives(options);
 	}
 
-	GLTF::Buffer* buffer = asset->packAccessors();
+	std::shared_ptr<GLTF::Buffer> buffer = asset->packAccessors();
 	if (options->binary && options->version == "1.0") {
 		buffer->stringId = "binary_glTF";
 	}
@@ -35,20 +35,18 @@ void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 	// Create image bufferViews for binary glTF
 	if (options->binary && options->embeddedTextures) {
 		size_t imageBufferLength = 0;
-		std::vector<GLTF::Image*> images = asset->getAllImages();
-		for (GLTF::Image* image : images) {
+		std::vector<std::shared_ptr<GLTF::Image>> images = asset->getAllImages();
+		for (auto const image : images) {
 			imageBufferLength += image->byteLength;
 		}
-		unsigned char* bufferData = buffer->data;
-		bufferData = (unsigned char*)realloc(bufferData, buffer->byteLength + imageBufferLength);
+		buffer->data->resize(buffer->byteLength + imageBufferLength, 0);
 		size_t byteOffset = buffer->byteLength;
-		for (GLTF::Image* image : images) {
-			GLTF::BufferView* bufferView = new GLTF::BufferView(byteOffset, image->byteLength, buffer);
+		for (auto const image : images) {
+			std::shared_ptr<GLTF::BufferView> bufferView(new GLTF::BufferView(byteOffset, image->byteLength, buffer));
 			image->bufferView = bufferView;
-			std::memcpy(bufferData + byteOffset, image->data, image->byteLength);
+			std::memcpy(buffer->data->data() + byteOffset, image->data->data(), image->byteLength);
 			byteOffset += image->byteLength;
 		}
-		buffer->data = bufferData;
 		buffer->byteLength += imageBufferLength;
 	}
 
@@ -59,11 +57,11 @@ void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 	jsonWriter.EndObject();
 
 	if (!options->embeddedTextures) {
-		for (GLTF::Image* image : asset->getAllImages()) {
+		for (auto const image : asset->getAllImages()) {
 			path uri = outputDirectory / image->uri;
 			FILE* file = fopen(uri.generic_string().c_str(), "wb");
 			if (file != NULL) {
-				fwrite(image->data, sizeof(unsigned char), image->byteLength, file);
+				fwrite(image->data->data(), sizeof(unsigned char), image->byteLength, file);
 				fclose(file);
 			}
 			else {
@@ -76,7 +74,7 @@ void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 		path uri = outputDirectory / buffer->uri;
 		FILE* file = fopen(uri.generic_string().c_str(), "wb");
 		if (file != NULL) {
-			fwrite(buffer->data, sizeof(unsigned char), buffer->byteLength, file);
+			fwrite(buffer->data->data(), sizeof(unsigned char), buffer->byteLength, file);
 			fclose(file);
 		}
 		else {
@@ -120,7 +118,7 @@ void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 		if (file != NULL) {
 			fwrite("glTF", sizeof(char), 4, file); // magic
 
-			uint32_t* writeHeader = new uint32_t[2];
+			uint32_t writeHeader[2];
 			// version
 			if (options->version == "1.0") {
 				writeHeader[0] = 1;
@@ -155,7 +153,7 @@ void GLTF::Utils::writeAssetToGlTF(GLTF::Asset* asset, COLLADA2GLTF::Options* op
 				writeHeader[1] = 0x004E4942; // chunkType BIN
 				fwrite(writeHeader, sizeof(uint32_t), 2, file);
 			}
-			fwrite(buffer->data, sizeof(unsigned char), buffer->byteLength, file);
+			fwrite(buffer->data->data(), sizeof(unsigned char), buffer->byteLength, file);
 			for (int i = 0; i < binPadding; i++) {
 				fwrite("\0", sizeof(char), 1, file);
 			}

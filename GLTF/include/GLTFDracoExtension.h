@@ -9,12 +9,13 @@
 #include "GLTFBufferView.h"
 #include "GLTFConstants.h"
 #include "GLTFObject.h"
+#include "GLTFExtension.h"
 
 namespace GLTF {
-	class DracoExtension : public GLTF::Object {
+	class DracoExtension : public GLTF::Extension {
 	public:
 		DracoExtension() : dracoMesh(new draco::Mesh()) {} 
-		GLTF::BufferView* bufferView = NULL;
+		std::shared_ptr<GLTF::BufferView> bufferView;
 		std::unordered_map<std::string, int> attributeToId;
 		
 		std::unique_ptr<draco::Mesh> dracoMesh;

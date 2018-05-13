@@ -20,16 +20,19 @@ namespace GLTF {
 			UNKNOWN
 		};
 
-		GLTF::BufferView* bufferView = NULL;
+		std::shared_ptr<GLTF::BufferView> bufferView;
 		int byteOffset = 0;
 		GLTF::Constants::WebGL componentType;
 		int count = 0;
-		float* max = NULL;
-		float* min = NULL;
+		std::unique_ptr<float[]> max = NULL;
+		std::unique_ptr<float[]> min = NULL;
 		Type type = Type::UNKNOWN;
 
 		Accessor(GLTF::Accessor::Type type, GLTF::Constants::WebGL componentType);
 
+		/**
+		 * Копиует параметр data, собственником остается тот, кто его передал
+		 */
 		Accessor(GLTF::Accessor::Type type,
 			GLTF::Constants::WebGL componentType,
 			unsigned char* data,
@@ -41,14 +44,14 @@ namespace GLTF {
 			GLTF::Constants::WebGL componentType,
 			unsigned char* data,
 			int count,
-			GLTF::BufferView* bufferView
+			std::shared_ptr<GLTF::BufferView> bufferView
 		);
 
 		Accessor(GLTF::Accessor::Type type,
 			GLTF::Constants::WebGL componentType,
 			int byteOffset,
 			int count,
-			GLTF::BufferView* bufferView
+		    std::shared_ptr<GLTF::BufferView> bufferView
 		);
 
 		static int getComponentByteLength(GLTF::Constants::WebGL componentType);

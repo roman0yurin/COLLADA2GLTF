@@ -24,19 +24,19 @@ namespace GLTF {
 
 		class Target {
 		public:
-			std::map<std::string, GLTF::Accessor*> attributes;
+			std::map<std::string, std::shared_ptr<GLTF::Accessor>> attributes;
 
 			Target* clone(GLTF::Object* clone);
 			void writeJSON(void* writer, GLTF::Options* options);
 		};
 
-		std::map<std::string, GLTF::Accessor*> attributes;
-		GLTF::Accessor* indices = NULL;
-		GLTF::Material* material = NULL;
+		std::map<std::string, std::shared_ptr<GLTF::Accessor>> attributes;
+		std::shared_ptr<GLTF::Accessor> indices = NULL;
+		std::shared_ptr<GLTF::Material> material = NULL;
 		Mode mode = Mode::UNKNOWN;
-		std::vector<Target*> targets;
+		std::vector<std::shared_ptr<Target>> targets;
 
-		virtual GLTF::Object* clone(GLTF::Object* clone);
+		virtual std::shared_ptr<GLTF::Object> clone(std::shared_ptr<GLTF::Object> clone);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
 	};
 }

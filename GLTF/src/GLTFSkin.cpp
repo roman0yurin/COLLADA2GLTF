@@ -20,9 +20,10 @@ void GLTF::Skin::writeJSON(void* writer, GLTF::Options* options) {
 			jsonWriter->Int(inverseBindMatrices->id);
 		}
 	}
-	if (options->version != "1.0" && skeleton != NULL) {
+	const std::shared_ptr<Node> &skl = skeleton.lock();
+	if (options->version != "1.0" && skl != NULL) {
 		jsonWriter->Key("skeleton");
-		jsonWriter->Int(skeleton->id);
+		jsonWriter->Int(skl->id);
 	}
 	if (options->version == "1.0") {
 		jsonWriter->Key("jointNames");
@@ -31,7 +32,8 @@ void GLTF::Skin::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->Key("joints");
 	}
 	jsonWriter->StartArray();
-	for (GLTF::Node* node : joints) {
+	for (std::weak_ptr<GLTF::Node> nd : joints) {
+		const std::shared_ptr<Node> &node = nd.lock();
 		if (node != NULL) {
 			if (options->version == "1.0") {
 				jsonWriter->String(node->jointName.c_str());

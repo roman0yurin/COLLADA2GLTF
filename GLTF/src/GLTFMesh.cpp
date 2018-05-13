@@ -7,11 +7,11 @@ std::string GLTF::Mesh::typeName() {
 	return "mesh";
 }
 
-GLTF::Object* GLTF::Mesh::clone(GLTF::Object* clone) {
-	GLTF::Mesh* mesh = dynamic_cast<GLTF::Mesh*>(clone);
+std::shared_ptr<GLTF::Object> GLTF::Mesh::clone(std::shared_ptr<GLTF::Object> clone) {
+	std::shared_ptr<GLTF::Mesh> mesh = std::dynamic_pointer_cast<GLTF::Mesh>(clone);
 	if (mesh != NULL) {
-		for (GLTF::Primitive* primitive : this->primitives) {
-			GLTF::Primitive* clonePrimitive = new GLTF::Primitive();
+		for (auto const primitive : this->primitives) {
+			std::shared_ptr<GLTF::Primitive> clonePrimitive(new GLTF::Primitive());
 			primitive->clone(clonePrimitive);
 			if (clonePrimitive != NULL) {
 				mesh->primitives.push_back(clonePrimitive);
@@ -27,7 +27,7 @@ void GLTF::Mesh::writeJSON(void* writer, GLTF::Options* options) {
 	auto* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
 	jsonWriter->Key("primitives");
 	jsonWriter->StartArray();
-	for (GLTF::Primitive* primitive : this->primitives) {
+	for (auto const primitive : this->primitives) {
 		jsonWriter->StartObject();
 		primitive->writeJSON(jsonWriter, options);
 		jsonWriter->EndObject();

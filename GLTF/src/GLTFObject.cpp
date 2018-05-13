@@ -15,7 +15,7 @@ std::string GLTF::Object::typeName() {
 	return "object";
 }
 
-GLTF::Object* GLTF::Object::clone(GLTF::Object* clone) {
+std::shared_ptr<GLTF::Object> GLTF::Object::clone(std::shared_ptr<GLTF::Object> clone) {
 	clone->id = this->id;
 	clone->name = this->name;
 	for (const auto extra : this->extras) {
