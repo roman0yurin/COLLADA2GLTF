@@ -85,9 +85,10 @@ namespace GLTF {
 		}
 
 		void setNodes(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & nd){
-			this->getDefaultScene()->nodes = std::vector<std::shared_ptr<GLTF::Node>>(
-					nd.begin(), nd.end()
-			);
+			std::vector<std::shared_ptr<GLTF::Node>> &nodes = this->getDefaultScene()->nodes;
+			nodes.clear();
+			for(std::shared_ptr<dgn::gltf::GltfNode> n : nd)
+				nodes.push_back(std::dynamic_pointer_cast<GLTF::Node>(n));
 		}
 	};
 }

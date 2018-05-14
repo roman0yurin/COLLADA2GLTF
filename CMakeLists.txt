@@ -7,6 +7,7 @@ set( CMAKE_C_FLAGS   "-fpic ${CMAKE_C_FLAGS}" )
 set(BUILD_FOR_GLTF ON)
 #По какой то причине опции компилятора в draco BUILD_FOR_GLTF срабатыват через раз, дублируем их здесь.
 ADD_DEFINITIONS("-DDRACO_MESH_COMPRESSION_SUPPORTED -DDRACO_STANDARD_EDGEBREAKER_SUPPORTED")
+set_property(GLOBAL PROPERTY GLTF_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 include(ExternalProject)
 
@@ -119,9 +120,10 @@ set(GLTF_INCLUDES include ${GLTF_INCLUDES})
 
 file(GLOB LIB_HEADERS "include/*.h")
 set(LIB_SOURCES
-        src/COLLADA2GLTFWriter.cpp
-        src/COLLADA2GLTFExtrasHandler.cpp
+    src/COLLADA2GLTFWriter.cpp
+    src/COLLADA2GLTFExtrasHandler.cpp
 		src/GLTF_Utils.cpp
+		src/GLTFOptions.cpp
   )
 add_library(${PROJECT_NAME} STATIC ${LIB_HEADERS} ${LIB_SOURCES})
 if(MSVC)
@@ -134,7 +136,11 @@ endif()
 set(GLTF_INCLUDES dependencies/ahoy/include ${GLTF_INCLUDES})
 add_subdirectory(dependencies/ahoy)
 
-add_executable(${PROJECT_NAME}-bin src/main.cpp src/GLTF_Utils)
+file(GLOB_RECURSE SOURCES_FILES
+        "src/*.cpp"
+)
+
+add_executable(${PROJECT_NAME}-bin ${SOURCES_FILES})
 if(MSVC)
    target_link_libraries(${PROJECT_NAME}-bin ${PROJECT_NAME} ahoy)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -161,7 +167,6 @@ if(TEST_ENABLED)
 
   add_test(COLLADA2GLTFWriterTest ${PROJECT_NAME}-test)
 endif()
-
 include_directories(${GLTF_INCLUDES})
 
 FOREACH(incl ${GLTF_INCLUDES})

@@ -1,20 +1,11 @@
-
-
-#include <gltf/asset/GltfAsset.h>
-#include "gltf/GltfOptions.h"
-#include "GLTF_Utils.h"
-#include "dgn/gltf/GltfUtils.hpp"
-
-/**записать набор 3д данных в glTF согласно опциям */
-void djinni_gen::GltfUtils::writeAssetToGlTF(const std::shared_ptr<djinni_gen::GltfAsset> & asset, const std::shared_ptr<djinni_gen::GltfOptions> & options){
-	GLTF::Utils::writeAssetToGlTF(dynamic_cast<GLTF::Asset*>(asset.get()), dynamic_cast<COLLADA2GLTF::Options*>(options.get()));
-}
+#include <dgn/gltf/GltfAttributeType.hpp>
+#include "GLTFUtils.h"
 
 /*Цвет из четырех-компонентного вектора*/
 std::optional<dgn::gltf::Color> GLTF::Utils::getColor(float *arr){
 	if(arr){
 		return std::optional(
-				dgn::gltf::Color(arr[0], arr[1], arr[2], arr[3])
+						dgn::gltf::Color(arr[0], arr[1], arr[2], arr[3])
 		);
 	}else{
 		return std::nullopt;
@@ -30,23 +21,23 @@ float * GLTF::Utils::fromColor(std::optional<dgn::gltf::Color> color){
 }
 
 /** Переход к перечислению GLTF **/
-dgn::gltf::GltfDataStruct GLTF::Utils::dataStructGLTF2Java(Type gltf){
+dgn::gltf::GltfDataStruct GLTF::Utils::dataStructGLTF2Java(GLTF::Accessor::Type gltf){
 	switch(gltf){
-		case Type::SCALAR:
+		case GLTF::Accessor::Type::SCALAR:
 			return dgn::gltf::GltfDataStruct::SCALAR;
-		case Type::VEC2:
+		case GLTF::Accessor::Type::VEC2:
 			return dgn::gltf::GltfDataStruct::VEC2;
-		case Type::VEC3:
+		case GLTF::Accessor::Type::VEC3:
 			return dgn::gltf::GltfDataStruct::VEC3;
-		case Type::VEC4:
+		case GLTF::Accessor::Type::VEC4:
 			return dgn::gltf::GltfDataStruct::VEC4;
-		case Type::MAT2:
+		case GLTF::Accessor::Type::MAT2:
 			return dgn::gltf::GltfDataStruct::MAT2;
-		case Type::MAT3:
+		case GLTF::Accessor::Type::MAT3:
 			return dgn::gltf::GltfDataStruct::MAT3;
-		case Type::MAT4:
+		case GLTF::Accessor::Type::MAT4:
 			return dgn::gltf::GltfDataStruct::MAT4;
-		case Type::UNKNOWN:
+		case GLTF::Accessor::Type::UNKNOWN:
 			return dgn::gltf::GltfDataStruct::UNKNOWN;
 		default:
 			throw std::runtime_error("unexpected case");
@@ -54,24 +45,24 @@ dgn::gltf::GltfDataStruct GLTF::Utils::dataStructGLTF2Java(Type gltf){
 }
 
 /**Переход к Java модели перечисления**/
-Accessor::Type GLTF::Utils::dataStructJava2GLTF(dgn::gltf::GltfDataStruct javaStruct){
-	switch (s){
+GLTF::Accessor::Type GLTF::Utils::dataStructJava2GLTF(dgn::gltf::GltfDataStruct javaStruct){
+	switch (javaStruct){
 		case dgn::gltf::GltfDataStruct::SCALAR:
-			return this->type = Type ::SCALAR;
+			return GLTF::Accessor::Type::SCALAR;
 		case dgn::gltf::GltfDataStruct::VEC2:
-			return this->type = Type ::VEC2;
+			return GLTF::Accessor::Type::VEC2;
 		case dgn::gltf::GltfDataStruct::VEC3:
-			return this->type = Type ::VEC3
+			return GLTF::Accessor::Type::VEC3;
 		case dgn::gltf::GltfDataStruct::VEC4:
-			return this->type = Type ::VEC4;
+			return GLTF::Accessor::Type::VEC4;
 		case dgn::gltf::GltfDataStruct::MAT2:
-			return this->type = Type ::MAT2;
+			return GLTF::Accessor::Type::MAT2;
 		case dgn::gltf::GltfDataStruct::MAT3:
-			return this->type = Type ::MAT3;
+			return GLTF::Accessor::Type::MAT3;
 		case dgn::gltf::GltfDataStruct::MAT4:
-			return this->type = Type ::MAT4;
+			return GLTF::Accessor::Type::MAT4;
 		case dgn::gltf::GltfDataStruct::UNKNOWN:
-			return this->type = Type ::UNKNOWN;
+			return GLTF::Accessor::Type::UNKNOWN;
 		default:
 			throw std::runtime_error("Unexpected case");
 	}
@@ -176,7 +167,7 @@ dgn::gltf::WebglConstants GLTF::Utils::webglConstGLTF2Java(GLTF::Constants::WebG
 
 
 /**Преобразовать константу к java варианту**/
-dgn::gltf::WebglConstants webglJava2GLTF(dgn::gltf::WebglConstants javaConst){
+GLTF::Constants::WebGL GLTF::Utils::webglJava2GLTF(dgn::gltf::WebglConstants javaConst){
 	switch(javaConst){
 		case dgn::gltf::WebglConstants::ALPHA:
 			return GLTF::Constants::WebGL::ALPHA;
@@ -274,27 +265,26 @@ dgn::gltf::WebglConstants webglJava2GLTF(dgn::gltf::WebglConstants javaConst){
 
 /**Тип аттрибута в формате Java**/
 dgn::gltf::GltfAttributeType GLTF::Utils::attrTypeGltf2Java(std::string gltf){
-	switch(gltf){
-		case "POSITION":
-			return dgn::gltf::GltfAttributeType::POSITION;
-		case "NORMAL":
-			return dgn::gltf::GltfAttributeType::NORMAL;
-		case "TANGENT":
-			return dgn::gltf::GltfAttributeType::TANGENT;
-		case "TEXCOORD_0":
-			return dgn::gltf::GltfAttributeType::TEXCOORD0;
-		case "TEXCOORD_1":
-			return dgn::gltf::GltfAttributeType::TXTCOORD1;
-		case "COLOR_0":
-			return dgn::gltf::GltfAttributeType::COLOR0;
-		case "JOINS_0":
-			return dgn::gltf::GltfAttributeType::JOINS0;
-		case "WEIGHTS_0":
-			return dgn::gltf::GltfAttributeType::WEIGHTS0;
-		default:
-			throw std::runtime_error("Unexpected case");
-
-	}
+	if(gltf.compare("POSITION"))
+		return dgn::gltf::GltfAttributeType::POSITION;
+	else if(gltf.compare("NORMAL"))
+		return dgn::gltf::GltfAttributeType::NORMAL;
+	else if(gltf.compare("TANGENT"))
+		return dgn::gltf::GltfAttributeType::TANGENT;
+	else if(gltf.compare("TEXCOORD_0"))
+		return dgn::gltf::GltfAttributeType::TEXCOORD0;
+	else if(gltf.compare("TEXCOORD_1"))
+		return dgn::gltf::GltfAttributeType::TEXCOORD1;
+	else if(gltf.compare("TEXCOORD_0"))
+		return dgn::gltf::GltfAttributeType::TEXCOORD0;
+	else if(gltf.compare("COLOR_0"))
+		return dgn::gltf::GltfAttributeType::COLOR0;
+	else if(gltf.compare("JOINS_0"))
+		return dgn::gltf::GltfAttributeType::JOINS0;
+	else if(gltf.compare("WEIGHTS_0"))
+		return dgn::gltf::GltfAttributeType::WEIGHTS0;
+	else
+		throw std::runtime_error("Unexpected case");
 }
 
 /**Тип аттрибута в формате GLTF**/
@@ -308,7 +298,7 @@ std::string GLTF::Utils::attrTypeJava2Gltf(dgn::gltf::GltfAttributeType java){
 			return "TANGENT";
 		case dgn::gltf::GltfAttributeType::TEXCOORD0:
 			return "TEXCOORD_0";
-		case dgn::gltf::GltfAttributeType::TXTCOORD1:
+		case dgn::gltf::GltfAttributeType::TEXCOORD1:
 			return "TEXCOORD_1";
 		case dgn::gltf::GltfAttributeType::COLOR0:
 			return "COLOR_0";
@@ -322,4 +312,61 @@ std::string GLTF::Utils::attrTypeJava2Gltf(dgn::gltf::GltfAttributeType java){
 }
 
 
+/**Техника отрисовки в Java**/
+dgn::gltf::MaterialTehnique	 GLTF::Utils::tehniqueGltf2Java(GLTF::MaterialCommon::Technique gltf){
+	switch (gltf){
+		case GLTF::MaterialCommon::Technique::BLINN:
+			return dgn::gltf::MaterialTehnique::BLINN;
+		case GLTF::MaterialCommon::Technique::CONSTANT:
+			return dgn::gltf::MaterialTehnique::CONSTANT;
+		case GLTF::MaterialCommon::Technique::LAMBERT:
+			return dgn::gltf::MaterialTehnique::LAMBERT;
+		case GLTF::MaterialCommon::Technique::PHONG:
+			return dgn::gltf::MaterialTehnique::PHONG;
+		case GLTF::MaterialCommon::Technique::UNKNOWN:
+			return dgn::gltf::MaterialTehnique::UNKNOWN;
+		default:
+			throw std::runtime_error("Unexpected case");
+	}
+}
 
+/**Техника отрисовки из Java**/
+GLTF::MaterialCommon::Technique	 GLTF::Utils::tehniqueJava2Gltf(dgn::gltf::MaterialTehnique java){
+	switch (java){
+		case dgn::gltf::MaterialTehnique::BLINN:
+			return GLTF::MaterialCommon::Technique::BLINN;
+		case dgn::gltf::MaterialTehnique::CONSTANT:
+			return GLTF::MaterialCommon::Technique::CONSTANT;
+		case dgn::gltf::MaterialTehnique::LAMBERT:
+			return GLTF::MaterialCommon::Technique::LAMBERT;
+		case dgn::gltf::MaterialTehnique::PHONG:
+			return GLTF::MaterialCommon::Technique::PHONG;
+		case dgn::gltf::MaterialTehnique::UNKNOWN:
+			return GLTF::MaterialCommon::Technique::UNKNOWN;
+		default:
+			throw std::runtime_error("Unexpected case");
+	}
+}
+
+/**Цвет из массива 4-х элементов**/
+std::optional<dgn::gltf::Color> GLTF::Utils::colorArray2Java(float *vec4){
+	return vec4 ? std::optional(
+					dgn::gltf::Color{
+									vec4[0], vec4[1], vec4[2], vec4[3]
+					}):
+	       std::nullopt;
+}
+
+/**Цвет в массив из 4-х элементов**/
+float *GLTF::Utils::colorJava2Array(const std::optional<dgn::gltf::Color> color){
+	if(color){
+		float *vec = new float[4];
+		vec[0] = color.value().red;
+		vec[1] = color.value().green;
+		vec[2] = color.value().blue;
+		vec[3] = color.value().alpha;
+		return vec;
+	}else{
+		return NULL;
+	}
+}

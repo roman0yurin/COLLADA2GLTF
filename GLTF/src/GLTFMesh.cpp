@@ -58,9 +58,11 @@ std::shared_ptr<dgn::gltf::GltfMesh> dgn::gltf::GltfMesh::create(const std::vect
 
 /**Набор графических примитивов, составляющих данный объект */
 std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>> GLTF::Mesh::getPrimitives(){
-	return reinterpret_cast<std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>>>(this->primitives);
+	return std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>>(this->primitives.begin(), this->primitives.end());
 }
 
-void GLTF::Mesh::setPrimitives(const std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>> & p){
-	this->primitives = reinterpret_cast<std::vector<std::shared_ptr<GLTF::Primitive>>>(p);
+void GLTF::Mesh::setPrimitives(const std::vector<std::shared_ptr<dgn::gltf::GltfPrimitive>> & primitives){
+	this->primitives.clear();
+	for(auto const p : primitives)
+		this->primitives.push_back(std::dynamic_pointer_cast<GLTF::Primitive>(p));
 }

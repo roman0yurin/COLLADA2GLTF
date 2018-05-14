@@ -5,7 +5,7 @@ using namespace COLLADA2GLTF;
 
 /**Создать экземпляр опций GLTF */
 std::shared_ptr<dgn::gltf::GltfOptions> dgn::gltf::GltfOptions::create(){
-	return std::shared_ptr<djinni_gen::GltfOptions>(new gltf::GltfOptions());
+	return std::shared_ptr<dgn::gltf::GltfOptions>(new COLLADA2GLTF::Options());
 }
 
 std::string Options::getInputPath(){

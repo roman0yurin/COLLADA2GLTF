@@ -8,7 +8,7 @@
 using namespace std::experimental::filesystem;
 
 namespace GLTF {
-	class Options : public dgn::gltf::GltfOptions{
+	class Options{
 	public:
 		std::string name;
 		bool embeddedBuffers = true;

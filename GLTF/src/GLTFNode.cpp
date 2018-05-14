@@ -389,21 +389,24 @@ void GLTF::Node::setName(const std::optional<std::string> & nm){
 
 /**Дочерние узля сцены */
 std::vector<std::shared_ptr<dgn::gltf::GltfNode>> GLTF::Node::getChildren(){
-	return reinterpret_cast<std::vector<std::shared_ptr<dgn::gltf::GltfNode>>>(this->children);
+	return std::vector<std::shared_ptr<dgn::gltf::GltfNode>>(this->children.begin(), this->children.end());
 }
 
 void GLTF::Node::setChildren(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & ch){
-	this->children = reinterpret_cast<std::vector<std::shared_ptr<GLTF::Node>>(ch);
+	this->children.clear();
+	for(auto const c : ch)
+		this->children.push_back(std::dynamic_pointer_cast<GLTF::Node>(c));
 }
 
 /**Матрица преобразования 4x4 перечисление элементов по колонкам */
 std::optional<std::vector<float>> GLTF::Node::getMatrix(){
-	if(this->transform && this->transform->type == Transform::Type::MATRIX)
-		return std::optional(
-			 std::vector(std::dynamic_pointer_cast<TransformMatrix>(this->transform)->matrix)
-		);
-	else
+	if(this->transform && this->transform->type == Transform::Type::MATRIX) {
+		float *mat = std::reinterpret_pointer_cast<TransformMatrix>(this->transform)->matrix;
+		std::vector<float> v = std::vector<float>(std::vector<float>(mat, mat + 16));
+		return std::optional(v);
+	}else {
 		return std::nullopt;
+	}
 }
 
 void GLTF::Node::setMatrix(const std::vector<float> & m){

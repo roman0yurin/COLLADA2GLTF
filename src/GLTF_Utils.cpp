@@ -3,7 +3,18 @@
  * @author Юрин Роман @date 07.05.2018
  **/
 
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/document.h>
 #include "GLTF_Utils.h"
+#include "COLLADA2GLTFWriter.h"
+
+#include "rapidjson/document.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+
+#include "ahoy/ahoy.h"
 const int HEADER_LENGTH = 12;
 const int CHUNK_HEADER_LENGTH = 8;
 
@@ -165,3 +176,12 @@ void GLTF::Utils::writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2G
 		}
 	}
 }
+
+
+///----------------------------------------------------------------------------------------------------------------------
+
+/**записать набор 3д данных в glTF согласно опциям */
+void dgn::gltf::GltfUtils::writeAssetToGlTF(const std::shared_ptr<dgn::gltf::GltfAsset> & asset, const std::shared_ptr<dgn::gltf::GltfOptions> & options){
+	GLTF::Utils::writeAssetToGlTF(std::dynamic_pointer_cast<GLTF::Asset>(asset), dynamic_cast<COLLADA2GLTF::Options*>(options.get()));
+}
+

@@ -350,7 +350,7 @@ int32_t GLTF::Accessor::getCount(){
 	return this->count;
 }
 
-virtual void GLTF::Accessor::setCount(int32_t value){
+void GLTF::Accessor::setCount(int32_t value){
 	this->count = value;
 }
 

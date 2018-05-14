@@ -3,6 +3,7 @@
 
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include "dgn/gltf/WebglConstants.hpp"
 
 GLTF::BufferView::BufferView(int byteOffset, int byteLength, std::shared_ptr<GLTF::Buffer> buffer){
 	this->buffer = buffer;
@@ -92,7 +93,7 @@ std::shared_ptr<dgn::gltf::GltfBuffer> GLTF::BufferView::getBuffer(){
 }
 
 void GLTF::BufferView::setBuffer(const std::shared_ptr<dgn::gltf::GltfBuffer> & b){
-	this->buffer = b;
+	this->buffer = std::dynamic_pointer_cast<GLTF::Buffer>(b);
 }
 
 /**Какая структура WebGL описывается в этой области данных */

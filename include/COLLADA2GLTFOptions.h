@@ -6,7 +6,7 @@
 #include "dgn/gltf/GltfOptions.hpp"
 
 namespace COLLADA2GLTF {
-	class Options : public GLTF::Options, public dgn::gltf::GltfOptions {
+	class Options : public GLTF::Options, public dgn::gltf::GltfOptions{
 	public:
 		std::string inputPath;
 		std::string basePath;

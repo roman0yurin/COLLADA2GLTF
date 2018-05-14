@@ -1,3 +1,4 @@
+#include <GLTF_Utils.h>
 #include "GLTFMaterial.h"
 #include "GLTFNode.h"
 
@@ -956,4 +957,114 @@ void GLTF::MaterialCommon::writeJSON(void* writer, GLTF::Options* options) {
 	jsonWriter->EndObject();
 	jsonWriter->EndObject();
 	GLTF::Object::writeJSON(writer, options);
+}
+
+
+//------------------------------------------------------------------------------------------------------------------
+
+/**Создать новый экземпляр */
+std::shared_ptr<dgn::gltf::MaterialCommon> dgn::gltf::MaterialCommon::create(){
+	return std::shared_ptr<dgn::gltf::MaterialCommon>(
+					new GLTF::MaterialCommon()
+	);
+}
+
+
+/**Материал явялется прозрачным */
+bool GLTF::MaterialCommon::isTransparent(){
+	return this->transparent;
+}
+
+void GLTF::MaterialCommon::setTransparent(bool value){
+	this->transparent = value;
+}
+
+/**Отображать материал с двух сторон */
+bool GLTF::MaterialCommon::isDoubleSided(){
+	return this->doubleSided;
+}
+
+void GLTF::MaterialCommon::setDoubleSided(bool value){
+	this->doubleSided = value;
+}
+
+/**Способ отображения материала */
+dgn::gltf::MaterialTehnique GLTF::MaterialCommon::getTehnique(){
+	return GLTF::Utils::tehniqueGltf2Java(this->technique);
+}
+
+void GLTF::MaterialCommon::setTehnique(dgn::gltf::MaterialTehnique value){
+	this->technique = GLTF::Utils::tehniqueJava2Gltf(value);
+}
+
+/**Освещение от окружающих предметов */
+std::optional<dgn::gltf::Color> GLTF::MaterialCommon::getAmbient(){
+	return GLTF::Utils::colorArray2Java(this->values->ambient.get());
+}
+
+void GLTF::MaterialCommon::setAmbient(const std::optional<dgn::gltf::Color> & value){
+	this->values->ambient.reset(
+					GLTF::Utils::colorJava2Array(value)
+	);
+}
+
+/**Освещение от рассеивания света поверхностью предмета */
+std::optional<dgn::gltf::Color> GLTF::MaterialCommon::getDiffuse(){
+	return GLTF::Utils::colorArray2Java(this->values->diffuse.get());
+}
+
+void GLTF::MaterialCommon::setDiffuse(const std::optional<dgn::gltf::Color> & value){
+	this->values->diffuse.reset(
+			GLTF::Utils::colorJava2Array(value)
+	);
+}
+
+/**Собственный источник свет */
+std::optional<dgn::gltf::Color> GLTF::MaterialCommon::getEmission(){
+	return GLTF::Utils::colorArray2Java(this->values->emission.get());
+}
+
+void GLTF::MaterialCommon::setEmission(const std::optional<dgn::gltf::Color> & value){
+	this->values->emission.reset(
+			GLTF::Utils::colorJava2Array(value)
+	);
+}
+
+/**отражение источника света */
+std::optional<dgn::gltf::Color> GLTF::MaterialCommon::getSpecular(){
+	return GLTF::Utils::colorArray2Java(this->values->specular.get());
+}
+
+void GLTF::MaterialCommon::setSpecular(const std::optional<dgn::gltf::Color> & value){
+	this->values->specular.reset(
+		GLTF::Utils::colorJava2Array(value)
+	);
+}
+
+/**Коэф. отражения */
+std::optional<float> GLTF::MaterialCommon::getShininess(){
+	return this->values->shininess ? std::optional<float>(this->values->shininess.get()[0]) : std::nullopt;
+}
+
+void GLTF::MaterialCommon::setShininess(std::optional<float> value){
+	if(value) {
+		float *v = new float[1];
+		v[0] = value.value();
+		this->values->shininess.reset(v);
+	}else
+		this->values->shininess.reset();
+}
+
+/**Коэф. прозрачности */
+std::optional<float> GLTF::MaterialCommon::getTransparency(){
+	return this->values->transparency ? std::optional<float>(this->values->transparency.get()[0]) : std::nullopt;
+}
+
+void GLTF::MaterialCommon::setTransparency(std::optional<float> value){
+	if(value) {
+		float *v = new float[1];
+		v[0] = value.value();
+		this->values->transparency.reset(v);
+	}else
+		this->values->transparency.reset();
 }

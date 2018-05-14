@@ -7,6 +7,7 @@
 #include "GLTFTechnique.h"
 #include "GLTFTexture.h"
 #include "dgn/gltf/MaterialCommon.hpp"
+#include "dgn/gltf/MaterialTehnique.hpp"
 
 namespace GLTF {
 	class Material : public GLTF::Object {
@@ -141,5 +142,53 @@ namespace GLTF {
 		std::string getTechniqueKey(GLTF::Options* options);
 		std::shared_ptr<GLTF::MaterialPBR> getMaterialPBR(GLTF::Options* options);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
+
+
+		//------------------------------------------------------------------------------------------------------------------
+
+			/**Материал явялется прозрачным */
+			bool isTransparent();
+
+			void setTransparent(bool value);
+
+			/**Отображать материал с двух сторон */
+			bool isDoubleSided();
+
+			void setDoubleSided(bool value) ;
+
+			/**Способ отображения материала */
+			dgn::gltf::MaterialTehnique getTehnique();
+
+			void setTehnique(dgn::gltf::MaterialTehnique value) ;
+
+			/**Освещение от окружающих предметов */
+			std::optional<dgn::gltf::Color> getAmbient();
+
+			void setAmbient(const std::optional<dgn::gltf::Color> & value);
+
+			/**Освещение от рассеивания света поверхностью предмета */
+			std::optional<dgn::gltf::Color> getDiffuse();
+
+			void setDiffuse(const std::optional<dgn::gltf::Color> & value);
+
+			/**Собственный источник свет */
+			std::optional<dgn::gltf::Color> getEmission();
+
+			void setEmission(const std::optional<dgn::gltf::Color> & value);
+
+			/**отражение источника света */
+			std::optional<dgn::gltf::Color> getSpecular();
+
+			void setSpecular(const std::optional<dgn::gltf::Color> & value);
+
+			/**Коэф. отражения */
+			std::optional<float> getShininess();
+
+			void setShininess(std::optional<float> value);
+
+			/**Коэф. прозрачности */
+			std::optional<float> getTransparency();
+
+			void setTransparency(std::optional<float> value);
 	};
 }
