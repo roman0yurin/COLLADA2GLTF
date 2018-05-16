@@ -14,6 +14,7 @@ namespace GLTF {
 	class Node : public GLTF::Object, public dgn::gltf::GltfNode {
 	public:
 		Node();
+		~Node();
 		class Transform : public std::enable_shared_from_this<Transform>{
 		public:
 			enum Type {

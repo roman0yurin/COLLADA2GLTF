@@ -66,29 +66,10 @@ namespace GLTF {
 		void useExtension(std::string extension);
 		virtual void writeJSON(void* writer, GLTF::Options* options);
 
-
-
-
-		//---------------------------------------------------------------------------------
-
-		/**Создать новый экземпляр */
-		std::shared_ptr<dgn::gltf::GltfAsset> create(){
-			return std::shared_ptr<dgn::gltf::GltfAsset>(
-				new GLTF::Asset()
-			);
-		}
-
+		//-------------------------------------------------------------------------
 		/**Список корневых объектов сцены */
-		std::vector<std::shared_ptr<dgn::gltf::GltfNode>> getNodes(){
-			std::vector<std::shared_ptr<Node>> &nd = this->getDefaultScene()->nodes;
-			return std::vector<std::shared_ptr<dgn::gltf::GltfNode>>(nd.begin(), nd.end());
-		}
+		std::vector<std::shared_ptr<dgn::gltf::GltfNode>> getNodes();
 
-		void setNodes(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & nd){
-			std::vector<std::shared_ptr<GLTF::Node>> &nodes = this->getDefaultScene()->nodes;
-			nodes.clear();
-			for(std::shared_ptr<dgn::gltf::GltfNode> n : nd)
-				nodes.push_back(std::dynamic_pointer_cast<GLTF::Node>(n));
-		}
+		void setNodes(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & nd);
 	};
 }

@@ -1502,3 +1502,27 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 
 	GLTF::Object::writeJSON(writer, options);
 }
+
+
+
+//---------------------------------------------------------------------------------
+
+/**Создать новый экземпляр */
+std::shared_ptr<dgn::gltf::GltfAsset> dgn::gltf::GltfAsset::create(){
+	return std::shared_ptr<dgn::gltf::GltfAsset>(
+					new GLTF::Asset()
+	);
+}
+
+/**Список корневых объектов сцены */
+std::vector<std::shared_ptr<dgn::gltf::GltfNode>> GLTF::Asset::getNodes(){
+	std::vector<std::shared_ptr<GLTF::Node>> &nd = this->getDefaultScene()->nodes;
+	return std::vector<std::shared_ptr<dgn::gltf::GltfNode>>(nd.begin(), nd.end());
+}
+
+void GLTF::Asset::setNodes(const std::vector<std::shared_ptr<dgn::gltf::GltfNode>> & nd){
+	std::vector<std::shared_ptr<GLTF::Node>> &nodes = this->getDefaultScene()->nodes;
+	nodes.clear();
+	for(std::shared_ptr<dgn::gltf::GltfNode> n : nd)
+		nodes.push_back(std::dynamic_pointer_cast<GLTF::Node>(n));
+}

@@ -9,6 +9,10 @@ GLTF::Node::Node(){
 	assert(!this->skin);
 }
 
+GLTF::Node::~Node(){
+	fprintf(stdout, "DESTROY NODE");
+}
+
 GLTF::Node::TransformMatrix::TransformMatrix() {
 	this->type = GLTF::Node::Transform::MATRIX;
 	this->matrix[0] = 1;
