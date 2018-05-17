@@ -136,3 +136,13 @@ std::shared_ptr<dgn::gltf::GltfAccessor> GLTF::Primitive::getIndexes(){
 void GLTF::Primitive::setIndexes(const std::shared_ptr<dgn::gltf::GltfAccessor> & idx){
 	this->indices = std::dynamic_pointer_cast<GLTF::Accessor>(idx);
 }
+
+
+/**Режим построения примитива из вершинного массива */
+dgn::gltf::GlMode GLTF::Primitive::getMode(){
+	return GLTF::Utils::primitiveModeGltf2Java(this->mode);
+}
+
+void GLTF::Primitive::setMode(dgn::gltf::GlMode m){
+	this->mode = GLTF::Utils::primitiveModeJava2Gltf(m);
+}

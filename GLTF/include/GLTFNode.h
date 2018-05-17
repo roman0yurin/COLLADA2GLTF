@@ -86,5 +86,10 @@ namespace GLTF {
 		std::optional<std::vector<float>> getMatrix();
 
 		void setMatrix(const std::vector<float> & m);
+
+		/**Меш связанный с  данным узлом сцены */
+		std::shared_ptr<dgn::gltf::GltfMesh> getMesh();
+
+		void setMesh(const std::shared_ptr<dgn::gltf::GltfMesh> & mesh);
 	};
 }

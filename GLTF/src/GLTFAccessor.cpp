@@ -317,11 +317,16 @@ std::shared_ptr<dgn::gltf::GltfAccessor> dgn::gltf::GltfAccessor::create(dgn::gl
 std::shared_ptr<dgn::gltf::GltfAccessor>  dgn::gltf::GltfAccessor::createByData(dgn::gltf::GltfDataStruct structType, dgn::gltf::WebglConstants componentType, const std::vector<uint8_t> & data,  dgn::gltf::WebglConstants target){
 	unsigned char *data_char = new unsigned char[data.size()];
 	memcpy(data_char, data.data(), data.size());
+	GLTF::Accessor::Type atrType = GLTF::Utils::dataStructJava2GLTF(structType);
+	GLTF::Constants::WebGL componentWebglType = GLTF::Utils::webglJava2GLTF(componentType);
+	int numComponents = GLTF::Accessor::getNumberOfComponents(atrType);
+	int bytesPerComponent = GLTF::Accessor::getComponentByteLength(componentWebglType);
+	assert(data.size() % (numComponents * bytesPerComponent) == 0);//Количество байт должно быть кратно размеру одной структуры
 	return std::shared_ptr<dgn::gltf::GltfAccessor>(
 		new GLTF::Accessor(
-				GLTF::Utils::dataStructJava2GLTF(structType), GLTF::Utils::webglJava2GLTF(componentType),
-				data_char, data.size(),
-				GLTF::Utils::webglJava2GLTF(target)
+						atrType, componentWebglType,
+						data_char, data.size() / (numComponents * bytesPerComponent),
+						GLTF::Utils::webglJava2GLTF(target)
 		)
 	);
 }

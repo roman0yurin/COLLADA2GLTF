@@ -46,6 +46,10 @@ namespace GLTF {
 				/**Цвет из массива 4-х элементов**/
 				std::optional<dgn::gltf::Color> colorArray2Java(float *vec4);
 
+				/**Преобразовать режим построения примитива в Java формат**/
+				dgn::gltf::GlMode primitiveModeGltf2Java(GLTF::Primitive::Mode mode);
+				GLTF::Primitive::Mode primitiveModeJava2Gltf(dgn::gltf::GlMode mode);
+
 				/**Цвет в массив из 4-х элементов**/
 				float *colorJava2Array(const std::optional<dgn::gltf::Color> clr);
 		};

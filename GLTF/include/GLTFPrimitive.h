@@ -2,6 +2,8 @@
 
 #include <map>
 #include <string>
+#include <dgn/gltf/GltfAttributeType.hpp>
+#include <dgn/gltf/GlMode.hpp>
 
 #include "GLTFAccessor.h"
 #include "GLTFDracoExtension.h"
@@ -56,5 +58,10 @@ namespace GLTF {
 		std::shared_ptr<dgn::gltf::GltfAccessor> getIndexes();
 
 		void setIndexes(const std::shared_ptr<dgn::gltf::GltfAccessor> & idx);
+
+
+		/**Режим построения примитива из вершинного массива */
+		dgn::gltf::GlMode getMode();
+		void setMode(dgn::gltf::GlMode m);
 	};
 }

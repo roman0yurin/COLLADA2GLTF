@@ -370,3 +370,61 @@ float *GLTF::Utils::colorJava2Array(const std::optional<dgn::gltf::Color> color)
 		return NULL;
 	}
 }
+
+
+/**Преобразовать режим построения примитива в Java формат**/
+dgn::gltf::GlMode GLTF::Utils::primitiveModeGltf2Java(GLTF::Primitive::Mode mode){
+	switch (mode){
+		case GLTF::Primitive::Mode::UNKNOWN:
+			return dgn::gltf::GlMode::UNKNOWN;
+
+		case GLTF::Primitive::Mode::LINE_LOOP:
+			return dgn::gltf::GlMode::LINE_LOOP;
+
+		case GLTF::Primitive::Mode::LINE_STRIP:
+			return dgn::gltf::GlMode::LINE_STRIP;
+
+		case GLTF::Primitive::Mode::LINES:
+			return dgn::gltf::GlMode::LINES;
+
+		case GLTF::Primitive::Mode::POINTS:
+			return dgn::gltf::GlMode::POINTS;
+
+		case GLTF::Primitive::Mode::TRIANGLE_FAN:
+			return dgn::gltf::GlMode::TRIANGLE_FAN;
+
+		case GLTF::Primitive::Mode::TRIANGLE_STRIP:
+			return dgn::gltf::GlMode::TRIANGLE_STRIP;
+
+		case GLTF::Primitive::Mode::TRIANGLES:
+			return dgn::gltf::GlMode::TRIANGLES;
+	}
+}
+
+GLTF::Primitive::Mode GLTF::Utils::primitiveModeJava2Gltf(dgn::gltf::GlMode mode){
+	switch (mode){
+		case dgn::gltf::GlMode::UNKNOWN:
+			return GLTF::Primitive::Mode::UNKNOWN;
+
+		case dgn::gltf::GlMode::LINE_LOOP:
+			return GLTF::Primitive::Mode::LINE_LOOP;
+
+		case dgn::gltf::GlMode::LINE_STRIP:
+			return GLTF::Primitive::Mode::LINE_STRIP;
+
+		case dgn::gltf::GlMode::LINES:
+			return GLTF::Primitive::Mode::LINES;
+
+		case dgn::gltf::GlMode::POINTS:
+			return GLTF::Primitive::Mode::POINTS;
+
+		case dgn::gltf::GlMode::TRIANGLE_FAN:
+			return GLTF::Primitive::Mode::TRIANGLE_FAN;
+
+		case dgn::gltf::GlMode::TRIANGLE_STRIP:
+			return GLTF::Primitive::Mode::TRIANGLE_STRIP;
+
+		case dgn::gltf::GlMode::TRIANGLES:
+			return GLTF::Primitive::Mode::TRIANGLES;
+	}
+}

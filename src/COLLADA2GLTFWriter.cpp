@@ -960,7 +960,7 @@ bool COLLADA2GLTF::Writer::writeEffect(const COLLADAFW::Effect* effect) {
 			packColladaColor(diffuse.getColor(), material->values->diffuse.get());
 			if (lockAmbientDiffuse) {
 				float *diffuse = new float[4];
-				memcpy(diffuse, material->values->diffuse.get(), 4);
+				memcpy(diffuse, material->values->diffuse.get(), 4 * sizeof(float));
 				material->values->ambient.reset(diffuse);
 			}
 		}

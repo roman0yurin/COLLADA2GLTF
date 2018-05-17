@@ -417,7 +417,16 @@ void GLTF::Node::setMatrix(const std::vector<float> & m){
 	if(m.size() > 0){
 		assert(m.size() == 16);
 		TransformMatrix *matrix = new TransformMatrix();
-		memcpy(matrix->matrix, m.data(), 16);
+		memcpy(matrix->matrix, m.data(), 16 * sizeof(float));
 		this->transform.reset(matrix);
 	}
+}
+
+/**Меш связанный с  данным узлом сцены */
+std::shared_ptr<dgn::gltf::GltfMesh> GLTF::Node::getMesh(){
+	return mesh;
+}
+
+void GLTF::Node::setMesh(const std::shared_ptr<dgn::gltf::GltfMesh> & mesh){
+	this->mesh = std::dynamic_pointer_cast<GLTF::Mesh>(mesh);
 }

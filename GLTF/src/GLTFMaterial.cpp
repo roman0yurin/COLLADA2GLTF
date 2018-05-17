@@ -459,7 +459,7 @@ std::shared_ptr<GLTF::Material> GLTF::MaterialCommon::getMaterial(std::vector<st
 		std::string name = "light" + std::to_string(i);
 		std::string colorName = name + "Color";
 		float *value = new float[4];
-		memcpy(value, light->color, 4);
+		memcpy(value, light->color, 4 * sizeof(float));
 		technique->parameters[colorName] = std::shared_ptr<GLTF::Technique::Parameter>(new GLTF::Technique::Parameter(GLTF::Constants::WebGL::FLOAT_VEC3, value, 3));
 		technique->uniforms["u_" + colorName] = colorName;
 		fragmentShaderSource += "uniform vec3 u_" + colorName + ";\n";
@@ -864,11 +864,11 @@ std::shared_ptr<GLTF::MaterialPBR> GLTF::MaterialCommon::getMaterialPBR(GLTF::Op
 	material->metallicRoughness->metallicFactor = 0;
 	if (values->diffuse) {
 		float *diffuse =new float[4];
-		memcpy(diffuse, values->diffuse.get(), 4);
+		memcpy(diffuse, values->diffuse.get(), 4 * sizeof(float));
 		material->metallicRoughness->baseColorFactor.reset(diffuse);
 		if (options->specularGlossiness) {
 			float *diffuse =new float[4];
-			memcpy(diffuse, values->diffuse.get(), 4);
+			memcpy(diffuse, values->diffuse.get(), 4 * sizeof(float));
 			material->specularGlossiness->diffuseFactor.reset(diffuse);
 		}
 	}
@@ -883,7 +883,7 @@ std::shared_ptr<GLTF::MaterialPBR> GLTF::MaterialCommon::getMaterialPBR(GLTF::Op
 
 	if (values->emission) {
 		float *emission =new float[4];
-		memcpy(emission, values->emission.get(), 4);
+		memcpy(emission, values->emission.get(), 4 * sizeof(float));
 		material->emissiveFactor.reset(emission);
 	}
 	if (values->emissionTexture) {
@@ -902,7 +902,7 @@ std::shared_ptr<GLTF::MaterialPBR> GLTF::MaterialCommon::getMaterialPBR(GLTF::Op
 	if (options->specularGlossiness) {
 		if (values->specular) {
 			float *specular =new float[4];
-			memcpy(specular, values->specular.get(), 4);
+			memcpy(specular, values->specular.get(), 4 * sizeof(float));
 			material->specularGlossiness->specularFactor.reset(specular);
 		}
 		if (values->specularTexture) {
