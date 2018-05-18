@@ -20,7 +20,7 @@ namespace GLTF {
 		class Metadata : public GLTF::Object {
 		public:
 			std::string copyright;
-			std::string generator = "COLLADA2GLTF";
+			std::string generator = "C60";
 			std::string version = "2.0";
 			virtual void writeJSON(void* writer, GLTF::Options* options);
 		};
