@@ -10,7 +10,6 @@ GLTF::Node::Node(){
 }
 
 GLTF::Node::~Node(){
-	fprintf(stdout, "DESTROY NODE");
 }
 
 GLTF::Node::TransformMatrix::TransformMatrix() {

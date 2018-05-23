@@ -167,7 +167,7 @@ int main(int argc, const char **argv) {
 			return -1;
 		}
 
-		GLTF::Utils::writeAssetToGlTF(asset, &options);
+		GLTF::Utils::writeAssetToGlTF(asset, &options, std::shared_ptr<dgn::gltf::JavaOutputSream>());
 		writer.reset();
 		asset.reset();
 		std::clock_t end = std::clock();

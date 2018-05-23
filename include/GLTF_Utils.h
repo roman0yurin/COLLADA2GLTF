@@ -16,7 +16,7 @@ namespace GLTF {
 			/**
 			 * Выгрузить набор 3D данных в glTF формат согласно опциям
 			 **/
-			void writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2GLTF::Options* options);
+			void writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2GLTF::Options* options, const std::shared_ptr<dgn::gltf::JavaOutputSream> & output);
 		};
 }
 
