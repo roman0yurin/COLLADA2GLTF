@@ -7,6 +7,7 @@
 
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
+#include "GLTF_Utils.h"
 
 GLTF::Asset::Asset() {
 	metadata.reset(new GLTF::Asset::Metadata());
@@ -605,6 +606,13 @@ bool GLTF::Asset::compressPrimitives(GLTF::Options* options) {
 
 std::shared_ptr<GLTF::Buffer> GLTF::Asset::packAccessors() {
 	std::map<GLTF::Constants::WebGL, std::map<int, std::vector<std::shared_ptr<GLTF::Accessor>>>> accessorGroups;
+	const std::function<std::map<int, std::vector<std::shared_ptr<GLTF::Accessor>>> ()> defaultAccessorGroup = [](){
+		return std::map<int, std::vector<std::shared_ptr<GLTF::Accessor>>>();
+	};
+	const std::function<std::vector<std::shared_ptr<GLTF::Accessor>> ()> defaultByteStride = [](){
+		return std::vector<std::shared_ptr<GLTF::Accessor>>();
+	};
+
 	accessorGroups[GLTF::Constants::WebGL::ARRAY_BUFFER] = std::map<int, std::vector<std::shared_ptr<GLTF::Accessor>>>();
 	accessorGroups[GLTF::Constants::WebGL::ELEMENT_ARRAY_BUFFER] = std::map<int, std::vector<std::shared_ptr<GLTF::Accessor>>>();
 	accessorGroups[(GLTF::Constants::WebGL)-1] = std::map<int, std::vector<std::shared_ptr<GLTF::Accessor>>>();
@@ -616,19 +624,10 @@ std::shared_ptr<GLTF::Buffer> GLTF::Asset::packAccessors() {
 			continue;
 		}
 		GLTF::Constants::WebGL target = accessor->bufferView->target;
-		auto targetGroup = accessorGroups[target];
+		auto& targetGroup = GLTF::Utils::withDefault(accessorGroups, target, defaultAccessorGroup);
 		int byteStride = accessor->getByteStride();
-		auto findByteStrideGroup = targetGroup.find(byteStride);
-		std::vector<std::shared_ptr<GLTF::Accessor>> byteStrideGroup;
-		if (findByteStrideGroup == targetGroup.end()) {
-			byteStrideGroup = std::vector<std::shared_ptr<GLTF::Accessor>>();
-		}
-		else {
-			byteStrideGroup = findByteStrideGroup->second;
-		}
+		std::vector<std::shared_ptr<GLTF::Accessor>> &byteStrideGroup = GLTF::Utils::withDefault(targetGroup, byteStride, defaultByteStride);
 		byteStrideGroup.push_back(accessor);
-		targetGroup[byteStride] = byteStrideGroup;
-		accessorGroups[target] = targetGroup;
 		byteLength += accessor->bufferView->byteLength;
 	}
 
@@ -642,6 +641,10 @@ std::shared_ptr<GLTF::Buffer> GLTF::Asset::packAccessors() {
 
 	std::vector<int> byteStrides;
 	std::map<int, std::vector<std::shared_ptr<GLTF::BufferView>>> bufferViews;
+	const std::function<std::vector<std::shared_ptr<GLTF::BufferView>> (const int)> makeBufferView = [&byteStrides](const int byteStride){
+		byteStrides.push_back(byteStride);
+		return std::vector<std::shared_ptr<GLTF::BufferView>>();
+	};
 	for (auto targetGroup : accessorGroups) {
 		for (auto byteStrideGroup : targetGroup.second) {
 			GLTF::Constants::WebGL target = targetGroup.first;
@@ -651,16 +654,8 @@ std::shared_ptr<GLTF::Buffer> GLTF::Asset::packAccessors() {
 				bufferView->byteStride = byteStride;
 			}
 			auto findBufferViews = bufferViews.find(byteStride);
-			std::vector<std::shared_ptr<GLTF::BufferView>> bufferViewGroup;
-			if (findBufferViews == bufferViews.end()) {
-				byteStrides.push_back(byteStride);
-				bufferViewGroup = std::vector<std::shared_ptr<GLTF::BufferView>>();
-			}
-			else {
-				bufferViewGroup = findBufferViews->second;
-			}
+			std::vector<std::shared_ptr<GLTF::BufferView>> &bufferViewGroup = GLTF::Utils::cache(bufferViews, byteStride, makeBufferView);
 			bufferViewGroup.push_back(bufferView);
-			bufferViews[byteStride] = bufferViewGroup;
 		}
 	}
 	std::sort(byteStrides.begin(), byteStrides.end(), std::greater<int>());
