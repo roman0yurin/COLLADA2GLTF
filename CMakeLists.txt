@@ -26,7 +26,7 @@ endif()
 option(test "Build all tests." ON)
 
 # GLTF
-set(GLTF_INCLUDES GLTF/include)
+set(GLTF_INCLUDES GLTF/include GLTF/include)
 add_subdirectory(GLTF)
 
 # Disable for other modules
@@ -116,7 +116,7 @@ if(NOT OpenCOLLADA)
 endif()
 
 # COLLADA2GLTF
-set(GLTF_INCLUDES include ${GLTF_INCLUDES})
+set(GLTF_INCLUDES include include/dgn/gltf ${GLTF_INCLUDES})
 
 file(GLOB LIB_HEADERS "include/*.h")
 set(LIB_SOURCES
