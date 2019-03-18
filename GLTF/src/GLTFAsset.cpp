@@ -363,7 +363,7 @@ std::vector<std::shared_ptr<GLTF::BufferView>> GLTF::Asset::getAllCompressedBuff
 	std::vector<std::shared_ptr<GLTF::BufferView>> compressedBufferViews;
 	std::set<std::shared_ptr<GLTF::BufferView>> uniqueCompressedBufferViews;
 	for (auto const primitive : getAllPrimitives()) {
-		auto dracoExtensionPtr = primitive->extensions.find("KHR_draco_mesh_compression");
+		auto dracoExtensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 		if (dracoExtensionPtr != primitive->extensions.end()) {
 			auto const bufferView = std::dynamic_pointer_cast<GLTF::DracoExtension>(dracoExtensionPtr->second)->bufferView;
 			if (uniqueCompressedBufferViews.find(bufferView) == uniqueCompressedBufferViews.end()) {
@@ -393,16 +393,16 @@ void GLTF::Asset::mergeAnimations() {
 }
 
 void GLTF::Asset::removeUncompressedBufferViews() {
-	for (auto const primitive : getAllPrimitives()) {
-		auto dracoExtensionPtr = primitive->extensions.find("KHR_draco_mesh_compression");
+	for (auto const &primitive : getAllPrimitives()) {
+		auto const &dracoExtensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 		if (dracoExtensionPtr != primitive->extensions.end()) {
 			// Currently assume all attributes are compressed in Draco extension.
-			for (const auto accessor: getAllPrimitiveAccessors(primitive)) {
+			for (const auto &accessor: getAllPrimitiveAccessors(primitive)) {
 				if (accessor->bufferView) {
 					accessor->bufferView.reset();
 				}
 			}
-			auto const indicesAccessor = primitive->indices;
+			auto const &indicesAccessor = primitive->indices;
 			if (indicesAccessor != NULL && indicesAccessor->bufferView) {
 				indicesAccessor->bufferView.reset();
 			}
@@ -411,12 +411,12 @@ void GLTF::Asset::removeUncompressedBufferViews() {
 }
 
 void GLTF::Asset::removeUnusedSemantics() {
-	for (auto const primitive : getAllPrimitives()) {
+	for (auto const &primitive : getAllPrimitives()) {
 		std::shared_ptr<GLTF::Material> material = primitive->material;
 		if (material != NULL) {
-			auto const values = material->values;
+			auto const &values = material->values;
 			std::map<std::string, std::shared_ptr<GLTF::Accessor>> attributes = primitive->attributes;
-			for (const auto attribute : attributes) {
+			for (const auto &attribute : attributes) {
 				std::string semantic = attribute.first;
 				if (semantic.find("TEXCOORD") != std::string::npos) {
 					std::map<std::string, std::shared_ptr<GLTF::Accessor>>::iterator removeTexcoord = primitive->attributes.find(semantic);
@@ -440,7 +440,7 @@ void GLTF::Asset::removeUnusedSemantics() {
 }
 
 void GLTF::Asset::removeAttributeFromDracoExtension(std::shared_ptr<GLTF::Primitive> primitive, const std::string &semantic) {
-	auto extensionPtr = primitive->extensions.find("KHR_draco_mesh_compression");
+	auto extensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 	if (extensionPtr != primitive->extensions.end()) {
 		auto const dracoExtension = std::dynamic_pointer_cast<GLTF::DracoExtension>(extensionPtr->second);
 		auto attPtr = dracoExtension->attributeToId.find(semantic);
@@ -557,9 +557,9 @@ std::shared_ptr<GLTF::BufferView> packAccessorsForTargetByteStride(std::vector<s
 
 bool GLTF::Asset::compressPrimitives(GLTF::Options* options) {
 	int totalPrimitives = 0;
-	for (auto const primitive : getAllPrimitives()) {
+	for (auto const &primitive : getAllPrimitives()) {
 		totalPrimitives++;
-		auto dracoExtensionPtr = primitive->extensions.find("KHR_draco_mesh_compression");
+		auto const &dracoExtensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 		if (dracoExtensionPtr == primitive->extensions.end()) {
 			// No extension exists.
 			continue;
@@ -593,9 +593,9 @@ bool GLTF::Asset::compressPrimitives(GLTF::Options* options) {
 			return false;
 		}
 
+
 		// Add compressed data to bufferview
-		std::vector<uint8_t> *allocatedData = new std::vector<uint8_t>(buffer.size(), 0);
-		std::memcpy(allocatedData->data(), buffer.data(), buffer.size());
+		std::vector<uint8_t> *allocatedData = new std::vector<uint8_t>(buffer.data(), buffer.data() + buffer.size());
 		std::shared_ptr<GLTF::BufferView> bufferView(new GLTF::BufferView(allocatedData, buffer.size()));
 		dracoExtension->bufferView = bufferView;
 		// Remove the mesh so duplicated primitives don't need to compress again.
@@ -930,7 +930,7 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 				}
 
 				// Find bufferViews of compressed data. These bufferViews does not belong to Accessors.
-				auto dracoExtensionPtr = primitive->extensions.find("KHR_draco_mesh_compression");
+				auto dracoExtensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 					if (dracoExtensionPtr != primitive->extensions.end()) {
 						std::shared_ptr<GLTF::BufferView> bufferView = std::dynamic_pointer_cast<GLTF::DracoExtension>(dracoExtensionPtr->second)->bufferView;
 						if (bufferView->id < 0) {
@@ -1076,7 +1076,7 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 	}
 
 	if (options->dracoCompression) {
-		this->requireExtension("KHR_draco_mesh_compression");
+		this->requireExtension(COLLADA2GLTF::DRACO_EXTENSION);
 	}
 
 	meshes.clear();

@@ -764,7 +764,12 @@ bool COLLADA2GLTF::Writer::writeMesh(const COLLADAFW::Mesh* colladaMesh) {
 	return true;
 }
 
-bool COLLADA2GLTF::Writer::addAttributesToDracoMesh(std::shared_ptr<GLTF::Primitive> primitive, const std::map<std::string, std::vector<float>>& buildAttributes, const std::vector<unsigned int>& buildIndices) {
+bool COLLADA2GLTF::Writer::addAttributesToDracoMesh(
+					std::shared_ptr<GLTF::Primitive> primitive,
+					const std::map<std::string,
+					std::vector<float>>& buildAttributes,
+					const std::vector<unsigned int>& buildIndices
+				) {
 	// Add extension to primitive.
 	std::shared_ptr<GLTF::DracoExtension> dracoExtension(new GLTF::DracoExtension());
 	primitive->extensions["KHR_draco_mesh_compression"] = dracoExtension;
@@ -825,7 +830,7 @@ bool COLLADA2GLTF::Writer::addControllerDataToDracoMesh(std::shared_ptr<GLTF::Pr
 	const GLTF::Accessor::Type type = GLTF::Accessor::Type::VEC4;
 	int componentCount = GLTF::Accessor::getNumberOfComponents(type);
     
-	auto dracoExtensionPtr = primitive->extensions.find("KHR_draco_mesh_compression");
+	auto dracoExtensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 	if (dracoExtensionPtr == primitive->extensions.end()) {
 		// No extension exists.
 		return true; 

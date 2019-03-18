@@ -19,6 +19,8 @@ namespace GLTF {
 		/**Данные размещенные непосредственно в файле (а не по ссылке) */
 		std::optional<std::vector<uint8_t>> getData() override;
 
+		std::unique_ptr<std::vector<uint8_t >> &getDataRef();
+
 		void setData(const std::optional<std::vector<uint8_t>> & data) override;
 
 		/**Сссылка на данные */

@@ -14,6 +14,7 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 #include "dgn/gltf/JavaOutputSream.hpp"
+#include "dgn/gltf/GltfAttributeType.hpp"
 
 #include "ahoy/ahoy.h"
 const int HEADER_LENGTH = 12;
@@ -35,6 +36,19 @@ void GLTF::Utils::writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2G
 	asset->removeUnusedSemantics();
 
 	if (options->dracoCompression) {
+		asset->requireExtension(COLLADA2GLTF::DRACO_EXTENSION);
+		for (auto const &primitive : asset->getAllPrimitives()){
+			std::map<std::string, std::vector<float>> attribToCompress;
+			for(auto const &[atrType, accessor] : primitive->attributes)
+				accessor->insertFloatData(attribToCompress[atrType]);
+
+
+			std::vector<unsigned int> indexes;
+			primitive->indices->insertIntData(indexes);
+			COLLADA2GLTF::Writer::addAttributesToDracoMesh(primitive, attribToCompress, indexes);
+		}
+
+
 		asset->removeUncompressedBufferViews();
 		asset->compressPrimitives(options);
 	}

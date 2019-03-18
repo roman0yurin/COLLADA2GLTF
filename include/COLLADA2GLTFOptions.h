@@ -6,6 +6,9 @@
 #include "dgn/gltf/GltfOptions.hpp"
 
 namespace COLLADA2GLTF {
+	/**Расширение для сжатия геометрии**/
+	static const char* DRACO_EXTENSION = "KHR_draco_mesh_compression";
+
 	class Options : public GLTF::Options, public dgn::gltf::GltfOptions{
 	public:
 		std::string inputPath;

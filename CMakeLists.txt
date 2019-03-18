@@ -6,8 +6,8 @@ set( CMAKE_C_FLAGS   "-fpic ${CMAKE_C_FLAGS}" )
 #Переключаем библиотеку draco в нужный режим
 set(BUILD_FOR_GLTF ON)
 #По какой то причине опции компилятора в draco BUILD_FOR_GLTF срабатыват через раз, дублируем их здесь.
-ADD_DEFINITIONS("-DDRACO_MESH_COMPRESSION_SUPPORTED -DDRACO_STANDARD_EDGEBREAKER_SUPPORTED")
 set_property(GLOBAL PROPERTY GLTF_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/../..)#draco ищет свой сгенерированый файл по пути draco/draco_features.h
 
 include(ExternalProject)
 

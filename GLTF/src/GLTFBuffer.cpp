@@ -40,7 +40,9 @@ void GLTF::Buffer::writeJSON(void* writer, GLTF::Options* options) {
 	GLTF::Object::writeJSON(writer, options);
 }
 
-
+std::unique_ptr<std::vector<uint8_t >> &GLTF::Buffer::getDataRef(){
+	return data;
+}
 
 /**Данные размещенные непосредственно в файле (а не по ссылке) */
 std::optional<std::vector<uint8_t>> GLTF::Buffer::getData(){

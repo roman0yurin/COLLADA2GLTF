@@ -90,5 +90,9 @@ namespace GLTF {
 		dgn::gltf::GltfDataStruct getStruct();
 
 		void setStruct(dgn::gltf::GltfDataStruct s);
+
+		/**Занести данные в буфер**/
+		void insertFloatData(std::vector<float> &buffer);
+		void insertIntData(std::vector<unsigned int> &buffer);
 	};
 };
