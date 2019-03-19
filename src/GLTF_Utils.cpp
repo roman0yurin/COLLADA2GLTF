@@ -39,13 +39,19 @@ void GLTF::Utils::writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2G
 		asset->requireExtension(COLLADA2GLTF::DRACO_EXTENSION);
 		for (auto const &primitive : asset->getAllPrimitives()){
 			std::map<std::string, std::vector<float>> attribToCompress;
+			std::map<std::string, std::vector<unsigned int>> intAttribToCompress;
 			for(auto const &[atrType, accessor] : primitive->attributes)
-				accessor->insertFloatData(attribToCompress[atrType]);
+				if(accessor->componentType == GLTF::Constants::WebGL::FLOAT)
+					accessor->insertFloatData(attribToCompress[atrType]);
+
+			for(auto const &[atrType, accessor] : primitive->attributes)
+				if(accessor->componentType == GLTF::Constants::WebGL::UNSIGNED_INT)
+					accessor->insertIntData(intAttribToCompress[atrType]);
 
 
 			std::vector<unsigned int> indexes;
 			primitive->indices->insertIntData(indexes);
-			COLLADA2GLTF::Writer::addAttributesToDracoMesh(primitive, attribToCompress, indexes);
+			COLLADA2GLTF::Writer::addAttributesToDracoMesh(primitive, attribToCompress, intAttribToCompress, indexes);
 		}
 
 

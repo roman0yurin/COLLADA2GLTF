@@ -718,7 +718,7 @@ bool COLLADA2GLTF::Writer::writeMesh(const COLLADAFW::Mesh* colladaMesh) {
 			if (_options->dracoCompression ) {
 				// Currently only support triangles. 
 				if (primitive->mode == GLTF::Primitive::Mode::TRIANGLES) {
-					if (!addAttributesToDracoMesh(primitive, buildAttributes, buildIndices)) {
+					if (!addAttributesToDracoMesh(primitive, buildAttributes, std::map<std::string, std::vector<unsigned int>>(), buildIndices)) {
 						// Error adding attributes to draco mesh.
 						return false;
 					}
@@ -766,8 +766,8 @@ bool COLLADA2GLTF::Writer::writeMesh(const COLLADAFW::Mesh* colladaMesh) {
 
 bool COLLADA2GLTF::Writer::addAttributesToDracoMesh(
 					std::shared_ptr<GLTF::Primitive> primitive,
-					const std::map<std::string,
-					std::vector<float>>& buildAttributes,
+					const std::map<std::string, std::vector<float>>& buildAttributes,
+					const std::map<std::string, std::vector<unsigned int>>& intBuildAttributes,
 					const std::vector<unsigned int>& buildIndices
 				) {
 	// Add extension to primitive.
@@ -821,6 +821,34 @@ bool COLLADA2GLTF::Writer::addAttributesToDracoMesh(
 			att_ptr->SetAttributeValue(att_ptr->mapped_index(i), &vertex_data[0]);
 		}
 	}
+
+	// Add int attributes to Draco mesh.
+	for (const auto& entry : intBuildAttributes) {
+		// First create Accessor without data.
+		std::string semantic = entry.first;
+		std::vector<unsigned int> attributeData = entry.second;
+		assert(semantic == "_BATCHID");//TODO другие случаи, задать GLTF::Accessor::Type и draco::GeometryAttribute::Type
+		GLTF::Accessor::Type type = GLTF::Accessor::Type::SCALAR;
+		const int componentCount = GLTF::Accessor::getNumberOfComponents(type);
+		const int vertexCount = attributeData.size() / componentCount;
+
+		// Create attributes for Draco mesh.
+		draco::GeometryAttribute::Type att_type = draco::GeometryAttribute::GENERIC;
+		draco::PointAttribute att;
+		att.Init(att_type, NULL, componentCount, draco::DT_UINT32, /* normalized */ false, /* stride */ sizeof(unsigned int) * componentCount, /* byte_offset */ 0);
+		int att_id = dracoMesh->AddAttribute(att, /* identity_mapping */ true, vertexCount);
+		draco::PointAttribute *att_ptr = dracoMesh->attribute(att_id);
+		// Unique id of attribute is set to attribute id initially.
+		// To note that the attribute id is not necessary to be the same as unique id after compressing the mesh, but the unqiue id will not change.
+		dracoExtension->attributeToId[semantic] = att_id;
+
+		for (draco::PointIndex i(0); i < vertexCount; ++i) {
+			std::vector<unsigned int> vertex_data(componentCount);
+			memcpy(&vertex_data[0], &attributeData[i.value() * componentCount], sizeof(unsigned int) * componentCount);
+			att_ptr->SetAttributeValue(att_ptr->mapped_index(i), &vertex_data[0]);
+		}
+	}
+
 	dracoExtension->dracoMesh = std::move(dracoMesh);
 	return true;
 }

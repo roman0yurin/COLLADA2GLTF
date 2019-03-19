@@ -129,6 +129,7 @@ namespace COLLADA2GLTF {
 		static bool addAttributesToDracoMesh(
 							std::shared_ptr<GLTF::Primitive> primitive,
 							const std::map<std::string, std::vector<float>>& buildAttributes,
+							const std::map<std::string, std::vector<unsigned int>>& intBuildAttributes,
 							const std::vector<unsigned int>& buildIndices
 						);
 

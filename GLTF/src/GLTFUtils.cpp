@@ -275,14 +275,14 @@ dgn::gltf::GltfAttributeType GLTF::Utils::attrTypeGltf2Java(std::string gltf){
 		return dgn::gltf::GltfAttributeType::TEXCOORD0;
 	else if(gltf.compare("TEXCOORD_1"))
 		return dgn::gltf::GltfAttributeType::TEXCOORD1;
-	else if(gltf.compare("TEXCOORD_0"))
-		return dgn::gltf::GltfAttributeType::TEXCOORD0;
 	else if(gltf.compare("COLOR_0"))
 		return dgn::gltf::GltfAttributeType::COLOR0;
 	else if(gltf.compare("JOINS_0"))
 		return dgn::gltf::GltfAttributeType::JOINS0;
 	else if(gltf.compare("WEIGHTS_0"))
 		return dgn::gltf::GltfAttributeType::WEIGHTS0;
+	else if(gltf.compare("_BATCHID"))
+		return dgn::gltf::GltfAttributeType::BATCHID;
 	else
 		throw std::runtime_error("Unexpected case");
 }
@@ -306,6 +306,8 @@ std::string GLTF::Utils::attrTypeJava2Gltf(dgn::gltf::GltfAttributeType java){
 			return "JOINS_0";
 		case dgn::gltf::GltfAttributeType::WEIGHTS0:
 			return "WEIGHTS_0";
+		case dgn::gltf::GltfAttributeType::BATCHID:
+			return "_BATCHID";
 		default:
 			throw std::runtime_error("Unexpected case");
 	}
