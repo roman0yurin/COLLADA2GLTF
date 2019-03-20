@@ -398,3 +398,25 @@ void GLTF::Accessor::insertIntData(std::vector<unsigned int> &buffer){
 		throw "Incorrect case";
 	}
 }
+
+
+/**Занести данные в буфер**/
+void GLTF::Accessor::insertShortData(std::vector<unsigned short> &buffer){
+	assert(bufferView->getByteOffset() == 0 && bufferView->getByteStride() == 0);//TODO реализовать копирование данных для других случаев
+	std::unique_ptr<std::vector<uint8_t>> &byteData = bufferView->buffer->data;
+	if(componentType == GLTF::Constants::WebGL::UNSIGNED_SHORT){
+		size_t size = byteData->size() / sizeof(uint16_t);
+		const uint16_t *data = reinterpret_cast<const uint16_t *>(byteData->data());
+		buffer.reserve(size + buffer.size());
+		for(int i = 0; i < size; i++)
+			buffer.push_back(data[i]);
+	}else if(componentType == GLTF::Constants::WebGL::UNSIGNED_BYTE){
+		size_t size = byteData->size();
+		const uint8_t *data = reinterpret_cast<const uint8_t *>(byteData->data());
+		buffer.reserve(size + buffer.size());
+		for(int i = 0; i < size; i++)
+			buffer.push_back(data[i]);
+	}else{
+		throw "Incorrect case";
+	}
+}
