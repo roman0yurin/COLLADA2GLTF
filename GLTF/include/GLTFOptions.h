@@ -28,6 +28,6 @@ namespace GLTF {
 		int normalQuantizationBits = 10;
 		int texcoordQuantizationBits = 10;
 		int colorQuantizationBits = 8;
-		int jointQuantizationBits = 8;
+		int jointQuantizationBits = 16;
 	};
 }

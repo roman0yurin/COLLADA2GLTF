@@ -279,10 +279,12 @@ void GLTF::Accessor::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->StartArray();
 		for (int i = 0; i < this->getNumberOfComponents(); i++) {
 			if (componentType == GLTF::Constants::WebGL::FLOAT) {
-				jsonWriter->Double(this->max[i]);
+				if(!jsonWriter->Double(this->max[i]))
+					throw "Incorrect coord";
 			}
 			else {
-				jsonWriter->Int((int)this->max[i]);
+				if(!jsonWriter->Int((int)this->max[i]))
+					throw "Incorrect coord";
 			}
 		}
 		jsonWriter->EndArray();
@@ -292,10 +294,12 @@ void GLTF::Accessor::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->StartArray();
 		for (int i = 0; i < this->getNumberOfComponents(); i++) {
 			if (componentType == GLTF::Constants::WebGL::FLOAT) {
-				jsonWriter->Double(this->min[i]);
+				if(!jsonWriter->Double(this->min[i]))
+					throw "Incorrect coord";
 			}
 			else {
-				jsonWriter->Int((int)this->min[i]);
+				if(!jsonWriter->Int((int)this->min[i]))
+					throw "Incorrect coord";
 			}
 		}
 		jsonWriter->EndArray();
