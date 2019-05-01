@@ -94,5 +94,6 @@ namespace GLTF {
 		/**Занести данные в буфер**/
 		void insertFloatData(std::vector<float> &buffer);
 		void insertIntData(std::vector<unsigned int> &buffer);
+		void insertShortData(std::vector<unsigned short> &buffer);
 	};
 };
