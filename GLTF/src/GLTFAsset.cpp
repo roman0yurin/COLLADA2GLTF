@@ -633,7 +633,12 @@ std::shared_ptr<GLTF::Buffer> GLTF::Asset::packAccessors() {
 
 	// Go through primitives and look for primitives that use Draco extension.
 	// If extension is not enabled, the vector will be empty.
-	std::vector<std::shared_ptr<GLTF::BufferView>> compressedBufferViews = getAllCompressedBufferView();
+	std::vector<std::shared_ptr<GLTF::BufferView>> compressedBufferViewsDirty = getAllCompressedBufferView();
+	std::vector<std::shared_ptr<GLTF::BufferView>> compressedBufferViews;
+	for (auto const &compressedBufferView : compressedBufferViewsDirty)
+		if(compressedBufferView != NULL) //Иногда возвращаются пустые наборы (NULL)
+			compressedBufferViews.push_back(compressedBufferView);
+
 	// Reserve data for compressed data.
 	for (auto const compressedBufferView : compressedBufferViews) {
 		byteLength += compressedBufferView->byteLength;
@@ -933,7 +938,7 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 				auto dracoExtensionPtr = primitive->extensions.find(COLLADA2GLTF::DRACO_EXTENSION);
 					if (dracoExtensionPtr != primitive->extensions.end()) {
 						std::shared_ptr<GLTF::BufferView> bufferView = std::dynamic_pointer_cast<GLTF::DracoExtension>(dracoExtensionPtr->second)->bufferView;
-						if (bufferView->id < 0) {
+						if (bufferView != NULL && bufferView->id < 0) {
 							bufferView->id = bufferViews.size();
 							bufferViews.push_back(bufferView);
 						}

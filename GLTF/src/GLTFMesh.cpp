@@ -28,9 +28,11 @@ void GLTF::Mesh::writeJSON(void* writer, GLTF::Options* options) {
 	jsonWriter->Key("primitives");
 	jsonWriter->StartArray();
 	for (auto const primitive : this->primitives) {
-		jsonWriter->StartObject();
-		primitive->writeJSON(jsonWriter, options);
-		jsonWriter->EndObject();
+		if(primitive->indices != NULL && primitive->indices->bufferView != NULL) {
+			jsonWriter->StartObject();
+			primitive->writeJSON(jsonWriter, options);
+			jsonWriter->EndObject();
+		}
 	}
 	jsonWriter->EndArray();
 	if (!weights.empty()) {

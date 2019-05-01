@@ -12,4 +12,4 @@
 	url = https://github.com/lasalvavida/ahoy.git
 [submodule "dependencies/draco"]
 	path = GLTF/dependencies/draco
-	url = https://github.com/google/draco
+	url = https://github.com/roman0yurin/draco
