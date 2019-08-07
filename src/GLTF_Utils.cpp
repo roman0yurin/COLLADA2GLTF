@@ -49,9 +49,10 @@ void GLTF::Utils::writeAssetToGlTF(std::shared_ptr<GLTF::Asset> asset, COLLADA2G
 			COLLADA2GLTF::Writer::addAttributesToDracoMesh(primitive, attribToCompress, indexes);
 		}
 
-
-		asset->removeUncompressedBufferViews();
 		asset->compressPrimitives(options);
+	}
+	else {
+		asset->removeUncompressedBufferViews(); // удаление опции просмотра буффера с использованием draco_compression
 	}
 
 	std::shared_ptr<GLTF::Buffer> buffer = asset->packAccessors();
