@@ -1702,3 +1702,7 @@ bool COLLADA2GLTF::Writer::writeFormulas(const COLLADAFW::Formulas* formulas) {
 bool COLLADA2GLTF::Writer::writeKinematicsScene(const COLLADAFW::KinematicsScene* kinematicsScene) {
 	return true;
 }
+
+bool COLLADA2GLTF::Writer::writeAnimationClip(const COLLADAFW::AnimationClip *animationClip) {
+    return false;
+}

@@ -135,5 +135,7 @@ namespace COLLADA2GLTF {
 		/** Add joint indices and joint weights to draco compression extension.*/
 		bool addControllerDataToDracoMesh(std::shared_ptr<GLTF::Primitive> primitive, unsigned short* jointArray, float* weightArray);
 
-	};
+        bool writeAnimationClip(const COLLADAFW::AnimationClip *animationClip) override;
+
+    };
 }
