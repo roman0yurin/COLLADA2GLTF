@@ -1,15 +1,20 @@
 [submodule "dependencies/OpenCOLLADA/OpenCOLLADA"]
 	path = dependencies/OpenCOLLADA/OpenCOLLADA
 	url = https://github.com/KhronosGroup/OpenCOLLADA.git
+	ignore = dirty
 [submodule "dependencies/rapidjson"]
 	path = GLTF/dependencies/rapidjson
 	url = https://github.com/miloyip/rapidjson
+	ignore = dirty
 [submodule "GLTF/dependencies/googletest"]
 	path = GLTF/dependencies/googletest
 	url = https://github.com/google/googletest.git
+	ignore = dirty
 [submodule "dependencies/ahoy"]
 	path = dependencies/ahoy
 	url = https://github.com/lasalvavida/ahoy.git
+	ignore = dirty
 [submodule "dependencies/draco"]
 	path = GLTF/dependencies/draco
 	url = https://github.com/roman0yurin/draco
+	ignore = dirty
