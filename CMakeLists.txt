@@ -8,6 +8,7 @@ set(BUILD_FOR_GLTF ON)
 #По какой то причине опции компилятора в draco BUILD_FOR_GLTF срабатыват через раз, дублируем их здесь.
 set_property(GLOBAL PROPERTY GLTF_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../..)#draco ищет свой сгенерированый файл по пути draco/draco_features.h
+include_directories("${CMAKE_BINARY_DIR}") #TODO иногда предыдущий путь не срабатывает
 
 include(ExternalProject)
 
@@ -173,4 +174,5 @@ FOREACH(incl ${GLTF_INCLUDES})
   LIST(APPEND GLTF_INCLUDES_FULL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${incl}")
 ENDFOREACH()
 set_property(GLOBAL PROPERTY GLTF_INCLUDES ${GLTF_INCLUDES_FULL_PATH})
+
 
