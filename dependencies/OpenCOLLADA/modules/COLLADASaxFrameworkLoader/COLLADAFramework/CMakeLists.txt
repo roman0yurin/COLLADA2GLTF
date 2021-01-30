@@ -20,5 +20,5 @@ include_directories(${BASE_PATH}/Externals/MathMLSolver/include)
 include_directories(${BASE_PATH}/Externals/MathMLSolver/include/AST)
 add_subdirectory(MathMLSolver)
 
-add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} COLLADABaseUtils MathMLSolver)

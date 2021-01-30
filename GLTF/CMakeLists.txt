@@ -30,7 +30,7 @@ include_directories(include)
 file(GLOB HEADERS "include/*.h")
 file(GLOB SOURCES "src/*.cpp")
 
-add_library(GLTF ${HEADERS} ${SOURCES})
+add_library(GLTF STATIC ${HEADERS} ${SOURCES})
 if(MSVC)
    target_link_libraries(${PROJECT_NAME})
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")

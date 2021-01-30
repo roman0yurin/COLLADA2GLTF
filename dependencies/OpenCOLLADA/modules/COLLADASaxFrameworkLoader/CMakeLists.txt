@@ -50,5 +50,5 @@ include_directories(${BASE_PATH}/Externals/expat/lib)
 add_definitions(-DPCRE_STATIC)
 include_directories(${BASE_PATH}/Externals/pcre/include)
 
-add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES} ${HEADERS_GENERATED14} ${SOURCES_GENERATED14} ${HEADERS_GENERATED15} ${SOURCES_GENERATED15})
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${HEADERS_GENERATED14} ${SOURCES_GENERATED14} ${HEADERS_GENERATED15} ${SOURCES_GENERATED15})
 target_link_libraries(${PROJECT_NAME} COLLADAFramework GeneratedSaxParser)

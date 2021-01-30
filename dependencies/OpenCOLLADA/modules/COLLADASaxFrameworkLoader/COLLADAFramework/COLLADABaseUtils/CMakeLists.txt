@@ -26,5 +26,5 @@ add_definitions(-DPCRE_STATIC)
 include_directories(${BASE_PATH}/Externals/pcre/include)
 add_subdirectory(pcre)
 
-add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES} ${MATH_HEADERS} ${MATH_SOURCES} ${UTF_HEADERS} ${UTF_SOURCES})
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${MATH_HEADERS} ${MATH_SOURCES} ${UTF_HEADERS} ${UTF_SOURCES})
 target_link_libraries(${PROJECT_NAME} pcre)
