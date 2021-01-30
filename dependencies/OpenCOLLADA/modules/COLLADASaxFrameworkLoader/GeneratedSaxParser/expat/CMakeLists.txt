@@ -12,4 +12,4 @@ include_directories(${PROJECT_PATH}/lib)
 file(GLOB HEADERS "${PROJECT_PATH}/lib/*.h")
 file(GLOB SOURCES "${PROJECT_PATH}/lib/*.c")
 
-add_library(${PROJECT_NAME} ${HEADERS} ${SOURCES})
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
